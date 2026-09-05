@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Rede Alerta</title>
+  <desc id="desc">Pulso digital transformando-se em ondas de água, representando telemetria hidrológica.</desc>
+  <g fill="none" stroke="#0697EB" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M82 218h70v-82h72v128c0 34 24 54 62 54" stroke-width="38"/>
+    <path d="M214 342c23-20 58-31 96-31 54 0 98 23 98 52s-44 52-98 52c-43 0-80-14-93-35" stroke-width="30"/>
+    <path d="M164 326c-34 22-52 49-52 78 0 49 87 88 194 88s194-39 194-88c0-29-20-57-54-78" stroke-width="28"/>
+  </g>
+  <circle cx="286" cy="318" r="19" fill="#FF8A3D"/>
+</svg>

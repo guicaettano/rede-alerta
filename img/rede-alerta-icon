@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Ícone Rede Alerta</title>
+  <desc id="desc">Pulso digital branco transformando-se em ondas de água sobre fundo verde-petróleo.</desc>
+  <rect x="24" y="24" width="464" height="464" rx="116" fill="#0697EB"/>
+  <g fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M116 220h57v-68h59v106c0 28 20 45 51 45" stroke-width="32"/>
+    <path d="M224 323c19-16 47-25 79-25 45 0 81 19 81 43s-36 43-81 43c-36 0-66-12-77-29" stroke-width="25"/>
+    <path d="M183 310c-28 18-43 40-43 64 0 40 72 72 160 72s160-32 160-72c0-24-16-47-44-64" stroke-width="23"/>
+  </g>
+  <circle cx="283" cy="303" r="16" fill="#FF8A3D"/>
+</svg>

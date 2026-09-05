@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane prefHeight="800.0" prefWidth="1220.0" stylesheets="@Style.css"
+           styleClass="app" xmlns="http://javafx.com/javafx/8.0.1"
+           xmlns:fx="http://javafx.com/fxml/1" fx:controller="control.ControllerPrincipal">
+  <BorderPane>
+    <top>
+      <HBox alignment="CENTER_LEFT" spacing="14.0" styleClass="header">
+        <padding><Insets bottom="14.0" left="34.0" right="34.0" top="14.0" /></padding>
+        <ImageView fitHeight="42.0" fitWidth="42.0" pickOnBounds="true" preserveRatio="true">
+          <image><Image url="@../img/rede-alerta-logo.png" /></image>
+        </ImageView>
+        <VBox spacing="0.0">
+          <Label text="REDE ALERTA" styleClass="brand" />
+          <Label text="Telemetria hidrológica · Camada Física" styleClass="subtitle" />
+        </VBox>
+        <Region HBox.hgrow="ALWAYS" />
+        <Label fx:id="etiquetaStatus" text="Canal disponível" styleClass="status-pill, status-idle" />
+      </HBox>
+    </top>
+
+    <center>
+      <VBox alignment="TOP_CENTER" spacing="14.0" styleClass="content">
+        <padding><Insets bottom="18.0" left="30.0" right="30.0" top="16.0" /></padding>
+
+        <HBox alignment="CENTER" spacing="24.0">
+          <!-- iPhone transmissor -->
+          <VBox alignment="CENTER" spacing="7.0">
+            <Label text="ESTAÇÃO TRANSMISSORA" styleClass="device-caption" />
+            <StackPane prefHeight="490.0" prefWidth="264.0" styleClass="phone-shell">
+              <VBox prefHeight="478.0" prefWidth="252.0" spacing="10.0" styleClass="phone-screen">
+                <padding><Insets bottom="14.0" left="14.0" right="14.0" top="10.0" /></padding>
+                <HBox alignment="CENTER_LEFT">
+                  <Label text="9:41" styleClass="ios-time" />
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Label text="●  ◔  ▰" styleClass="ios-status" />
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="9.0" styleClass="ios-navbar">
+                  <ImageView fitHeight="34.0" fitWidth="34.0" pickOnBounds="true" preserveRatio="true">
+                    <image><Image url="@../img/rede-alerta-icon.png" /></image>
+                  </ImageView>
+                  <VBox spacing="0.0">
+                    <Label text="Rio Verruga" styleClass="ios-title" />
+                    <Label text="Estação 04 · Online" styleClass="ios-subtitle" />
+                  </VBox>
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Label text="•••" styleClass="ios-more" />
+                </HBox>
+
+                <VBox spacing="3.0" styleClass="sensor-hero">
+                  <HBox alignment="CENTER_LEFT">
+                    <Label text="NÍVEL ATUAL" styleClass="mini-label" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label text="● ATENÇÃO" styleClass="attention-badge" />
+                  </HBox>
+                  <HBox alignment="BASELINE_LEFT" spacing="4.0">
+                    <Label text="4,82" styleClass="water-value" />
+                    <Label text="m" styleClass="water-unit" />
+                  </HBox>
+                  <Label text="+ 0,31 m na última hora" styleClass="trend-label" />
+                </VBox>
+
+                <Label text="MENSAGEM DE ALERTA" styleClass="mini-label" />
+                <TextArea fx:id="campoMensagem" prefHeight="88.0" promptText="Digite o alerta..."
+                          wrapText="true" styleClass="message-input" />
+                <HBox alignment="CENTER_LEFT" spacing="8.0">
+                  <Button text="Exemplo" onAction="#carregarExemplo" styleClass="ios-secondary-button" />
+                  <Button fx:id="botaoEnviar" text="Transmitir" onAction="#enviar"
+                          maxWidth="Infinity" HBox.hgrow="ALWAYS" styleClass="ios-primary-button" />
+                </HBox>
+                <VBox spacing="2.0" styleClass="ios-message-card">
+                  <Label text="ÚLTIMO ENVIO" styleClass="mini-label" />
+                  <Label fx:id="mensagemTransmitida" text="Nenhum alerta enviado" wrapText="true"
+                         maxHeight="42.0" styleClass="message-placeholder" />
+                </VBox>
+                <Region VBox.vgrow="ALWAYS" />
+                <Region prefHeight="4.0" prefWidth="82.0" styleClass="home-indicator" />
+              </VBox>
+              <Region maxHeight="25.0" maxWidth="82.0" StackPane.alignment="TOP_CENTER"
+                      styleClass="dynamic-island">
+                <StackPane.margin><Insets top="7.0" /></StackPane.margin>
+              </Region>
+            </StackPane>
+          </VBox>
+
+          <!-- Canal físico -->
+          <VBox prefWidth="414.0" spacing="10.0" styleClass="channel-card">
+            <HBox alignment="CENTER_LEFT">
+              <VBox spacing="1.0">
+                <Label text="ENLACE FÍSICO" styleClass="eyebrow" />
+                <Label text="Sinal em trânsito" styleClass="section-title" />
+              </VBox>
+              <Region HBox.hgrow="ALWAYS" />
+            </HBox>
+
+            <StackPane styleClass="wave-surface">
+              <Canvas fx:id="canvasOnda" height="126.0" width="382.0" />
+            </StackPane>
+
+            <VBox spacing="5.0">
+              <Label text="CODIFICAÇÃO DE LINHA" styleClass="field-label" />
+              <ComboBox fx:id="seletorCodificacao" maxWidth="Infinity" />
+              <Label fx:id="detalhesCodificacao" text="" styleClass="encoding-detail" />
+            </VBox>
+
+            <VBox spacing="5.0">
+              <HBox alignment="CENTER_LEFT">
+                <Label text="VELOCIDADE DA TRANSMISSÃO" styleClass="field-label" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Label fx:id="valorVelocidade" text="Normal" styleClass="speed-value" />
+              </HBox>
+              <Slider fx:id="controleVelocidade" blockIncrement="1.0" majorTickUnit="1.0"
+                      max="10.0" min="1.0" value="7.0" />
+              <HBox>
+                <Label text="Mais rápida" styleClass="scale-label" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Label text="Mais lenta" styleClass="scale-label" />
+              </HBox>
+            </VBox>
+
+            <VBox spacing="5.0">
+              <HBox alignment="CENTER_LEFT">
+                <Label text="PROGRESSO" styleClass="field-label" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Label fx:id="progressoTexto" text="0 / 0 bits" styleClass="progress-text" />
+              </HBox>
+              <ProgressBar fx:id="barraProgresso" maxWidth="Infinity" progress="0.0" />
+            </VBox>
+            <HBox alignment="CENTER" spacing="7.0" styleClass="layer-flow">
+              <Label text="APLICAÇÃO" styleClass="layer-chip" />
+              <Label text="→" styleClass="flow-arrow" />
+              <Label text="FÍSICA" styleClass="layer-chip, active-chip" />
+              <Label text="→" styleClass="flow-arrow" />
+              <Label text="MEIO" styleClass="layer-chip" />
+              <Label text="→" styleClass="flow-arrow" />
+              <Label text="FÍSICA" styleClass="layer-chip, active-chip" />
+            </HBox>
+          </VBox>
+
+          <!-- iPhone receptor -->
+          <VBox alignment="CENTER" spacing="7.0">
+            <Label text="CENTRAL RECEPTORA" styleClass="device-caption" />
+            <StackPane prefHeight="490.0" prefWidth="264.0" styleClass="phone-shell, receiver-shell">
+              <VBox prefHeight="478.0" prefWidth="252.0" spacing="10.0" styleClass="phone-screen">
+                <padding><Insets bottom="14.0" left="14.0" right="14.0" top="10.0" /></padding>
+                <HBox alignment="CENTER_LEFT">
+                  <Label text="9:41" styleClass="ios-time" />
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Label text="●  ◔  ▰" styleClass="ios-status" />
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="9.0" styleClass="ios-navbar">
+                  <ImageView fitHeight="34.0" fitWidth="34.0" pickOnBounds="true" preserveRatio="true">
+                    <image><Image url="@../img/rede-alerta-icon.png" /></image>
+                  </ImageView>
+                  <VBox spacing="0.0">
+                    <Label text="Defesa Civil" styleClass="ios-title" />
+                    <Label text="Central de operações" styleClass="ios-subtitle" />
+                  </VBox>
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Label text="•••" styleClass="ios-more" />
+                </HBox>
+
+                <VBox spacing="3.0" styleClass="map-card">
+                  <Label text="RIO VERRUGA · SETOR 04" styleClass="mini-label" />
+                  <StackPane minHeight="82.0" VBox.vgrow="ALWAYS" styleClass="mini-map">
+                    <Label text="⌖" styleClass="map-pin" />
+                  </StackPane>
+                  <HBox alignment="CENTER_LEFT">
+                    <Label text="Sensor conectado" styleClass="trend-label" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label text="AGORA" styleClass="live-label" />
+                  </HBox>
+                </VBox>
+
+                <VBox prefHeight="140.0" spacing="6.0" styleClass="received-panel">
+                  <HBox alignment="CENTER_LEFT">
+                    <Label text="ALERTA DECODIFICADO" styleClass="mini-label" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label text="✓" styleClass="check-icon" />
+                  </HBox>
+                  <Label fx:id="mensagemRecebida" text="Aguardando transmissão..." wrapText="true"
+                         styleClass="message-placeholder" />
+                </VBox>
+                <HBox alignment="CENTER_LEFT" spacing="6.0" styleClass="secure-row">
+                  <Label text="◉" styleClass="secure-icon" />
+                  <Label text="Aplicação receptora pronta" styleClass="ios-subtitle" />
+                </HBox>
+                <Region VBox.vgrow="ALWAYS" />
+                <Region prefHeight="4.0" prefWidth="82.0" styleClass="home-indicator" />
+              </VBox>
+              <Region maxHeight="25.0" maxWidth="82.0" StackPane.alignment="TOP_CENTER"
+                      styleClass="dynamic-island">
+                <StackPane.margin><Insets top="7.0" /></StackPane.margin>
+              </Region>
+            </StackPane>
+          </VBox>
+        </HBox>
+
+        <HBox prefHeight="142.0" spacing="14.0" styleClass="inspector-card">
+          <VBox prefWidth="178.0" spacing="5.0">
+            <Label text="INSPEÇÃO" styleClass="eyebrow" />
+            <Label text="Quadro de bits" styleClass="section-title" />
+            <Label text="Manipulação em inteiros de 32 bits, conforme o framework."
+                   wrapText="true" styleClass="inspector-copy" />
+          </VBox>
+          <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+            <Label text="QUADRO ORIGINAL" styleClass="field-label" />
+            <TextArea fx:id="quadroOriginal" editable="false" prefHeight="88.0" wrapText="true"
+                      styleClass="bit-area" />
+          </VBox>
+          <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+            <Label text="FLUXO BRUTO CODIFICADO" styleClass="field-label" />
+            <TextArea fx:id="fluxoCodificado" editable="false" prefHeight="88.0" wrapText="true"
+                      styleClass="bit-area, encoded-area" />
+          </VBox>
+        </HBox>
+      </VBox>
+    </center>
+  </BorderPane>
+</StackPane>
