@@ -1,0 +1,87 @@
+.root {
+  -fx-font-family: "Segoe UI", "Arial";
+  -fx-font-smoothing-type: gray;
+}
+.aplicacao {
+  -fx-background-color: #F7FAFC;
+  -fx-background-image: url("../img/fundo-transmissao.png");
+  -fx-background-size: cover;
+  -fx-background-position: center center;
+  -fx-background-repeat: no-repeat;
+}
+.cabecalho {
+  -fx-background-color: rgba(255, 255, 255, 0.96);
+  -fx-border-color: transparent transparent #DCEAF5 transparent;
+  -fx-border-width: 0 0 1 0;
+}
+.marca { -fx-text-fill: #152536; -fx-font-size: 18px; -fx-font-weight: 800; }
+.subtitulo { -fx-text-fill: #718294; -fx-font-size: 10px; }
+.status { -fx-font-size: 10px; -fx-font-weight: 700; -fx-padding: 7 12; -fx-background-radius: 12; }
+.status-disponivel, .status-transmitindo, .status-sucesso { -fx-background-color: #E6F4FE; -fx-text-fill: #047BC2; }
+.status-erro { -fx-background-color: #FFF0F0; -fx-text-fill: #B43A45; }
+.conteudo { -fx-background-color: transparent; }
+.cena-transmissao { -fx-padding: 0 10; }
+.legenda-dispositivo { -fx-text-fill: #566B7C; -fx-font-size: 9px; -fx-font-weight: 800; }
+.palco-dispositivo { -fx-effect: dropshadow(gaussian, rgba(28, 66, 94, 0.15), 18, 0.10, 0, 8); }
+.conector-dispositivo { -fx-background-color: #0697EB; -fx-background-radius: 12; }
+.conteudo-dispositivo { -fx-padding: 4 0; }
+.titulo-celular { -fx-text-fill: #162738; -fx-font-size: 14px; -fx-font-weight: 800; }
+.subtitulo-celular { -fx-text-fill: #7C8B99; -fx-font-size: 9px; }
+.rotulo-campo, .sobretitulo { -fx-text-fill: #718294; -fx-font-size: 8px; -fx-font-weight: 800; }
+.text-area {
+  -fx-background-color: #F7FAFC; -fx-background-radius: 12;
+  -fx-border-color: #D8E5EE; -fx-border-radius: 12;
+  -fx-text-fill: #1B2B3A; -fx-prompt-text-fill: #98A6B2;
+  -fx-font-size: 10px; -fx-padding: 1;
+}
+.text-area .content { -fx-background-color: #F7FAFC; -fx-background-radius: 12; }
+.text-area:focused { -fx-border-color: #0697EB; }
+.botao-primario, .botao-secundario {
+  -fx-cursor: hand; -fx-font-size: 10px; -fx-font-weight: 800;
+  -fx-padding: 9 12; -fx-background-radius: 12;
+}
+.botao-primario { -fx-background-color: #0697EB; -fx-text-fill: white; }
+.botao-primario:hover { -fx-background-color: #057FC6; }
+.botao-primario:pressed { -fx-translate-y: 1; }
+.botao-primario:disabled { -fx-opacity: 0.50; }
+.botao-secundario { -fx-background-color: #EAF2F7; -fx-text-fill: #435B6D; }
+.botao-secundario:hover { -fx-background-color: #DFEBF2; }
+.cartao-mensagem-celular, .painel-recebido {
+  -fx-padding: 10; -fx-background-color: #F3F8FB; -fx-background-radius: 12;
+  -fx-border-color: #DDEAF2; -fx-border-radius: 12;
+}
+.mensagem-espera { -fx-text-fill: #83929F; -fx-font-size: 9px; -fx-font-style: italic; }
+.mensagem-valor { -fx-text-fill: #213544; -fx-font-size: 10px; }
+.mensagem-recebida { -fx-text-fill: #047BC2; -fx-font-size: 11px; -fx-font-weight: 700; }
+.ilustracao-recepcao {
+  -fx-min-height: 92px; -fx-background-color: #EAF6FE; -fx-background-radius: 12;
+  -fx-border-color: #C9E8FB; -fx-border-radius: 12;
+}
+.simbolo-binario { -fx-text-fill: #0697EB; -fx-font-size: 28px; -fx-font-weight: 800; }
+.coluna-canal { -fx-padding: 0 14; }
+.cabecalho-canal { -fx-padding: 0 8; }
+.titulo-secao { -fx-text-fill: #152536; -fx-font-size: 22px; -fx-font-weight: 800; }
+.texto-canal { -fx-text-fill: #718294; -fx-font-size: 10px; }
+.superficie-sinal {
+  -fx-background-color: rgba(255, 255, 255, 0.92); -fx-background-radius: 16;
+  -fx-border-color: #D5E8F5; -fx-border-radius: 16;
+  -fx-effect: dropshadow(gaussian, rgba(6, 116, 181, 0.10), 18, 0.06, 0, 7);
+}
+.painel-controles {
+  -fx-padding: 14; -fx-background-color: rgba(255, 255, 255, 0.95);
+  -fx-background-radius: 16; -fx-border-color: #D5E8F5; -fx-border-radius: 16;
+}
+.combo-box {
+  -fx-background-color: #F7FAFC; -fx-border-color: #D8E5EE;
+  -fx-border-radius: 10; -fx-background-radius: 10;
+}
+.combo-box:focused { -fx-border-color: #0697EB; }
+.combo-box .list-cell { -fx-text-fill: #263A49; -fx-font-size: 10px; -fx-background-color: transparent; }
+.combo-box-popup .list-view { -fx-background-color: white; -fx-border-color: #D8E5EE; }
+.combo-box-popup .list-cell:hover { -fx-background-color: #EAF6FE; }
+.valor-velocidade { -fx-text-fill: #047BC2; -fx-font-size: 9px; -fx-font-weight: 800; }
+.rotulo-escala { -fx-text-fill: #8B99A5; -fx-font-size: 8px; }
+.slider .track { -fx-background-color: #DCEAF3; -fx-pref-height: 4px; }
+.slider .thumb { -fx-background-color: #0697EB; -fx-pref-width: 14px; -fx-pref-height: 14px; }
+.scroll-bar:vertical, .scroll-bar:horizontal { -fx-background-color: transparent; }
+.scroll-bar .thumb { -fx-background-color: #CFDEE7; -fx-background-radius: 8; }

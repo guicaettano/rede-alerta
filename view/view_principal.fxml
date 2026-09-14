@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane prefHeight="690.0" prefWidth="1360.0" stylesheets="@Style.css"
+           styleClass="aplicacao" xmlns="http://javafx.com/javafx/8.0.1"
+           xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ControladorPrincipal">
+  <BorderPane>
+    <top>
+      <HBox alignment="CENTER_LEFT" spacing="12.0" styleClass="cabecalho">
+        <padding><Insets bottom="12.0" left="32.0" right="32.0" top="12.0" /></padding>
+        <ImageView fitHeight="38.0" fitWidth="38.0" preserveRatio="true">
+          <image><Image url="@../img/rede-alerta-logo.png" /></image>
+        </ImageView>
+        <VBox spacing="0.0">
+          <Label text="REDE ALERTA" styleClass="marca" />
+          <Label text="Transmissao de mensagens pela camada fisica" styleClass="subtitulo" />
+        </VBox>
+        <Region HBox.hgrow="ALWAYS" />
+        <Label fx:id="etiquetaStatus" text="Canal disponivel" styleClass="status, status-disponivel" />
+      </HBox>
+    </top>
+
+    <center>
+      <VBox alignment="CENTER" spacing="12.0" styleClass="conteudo">
+        <padding><Insets bottom="16.0" left="28.0" right="28.0" top="12.0" /></padding>
+
+        <HBox alignment="CENTER" spacing="-8.0" styleClass="cena-transmissao">
+          <VBox alignment="CENTER" spacing="4.0">
+            <Label text="TRANSMISSOR" styleClass="legenda-dispositivo" />
+            <StackPane prefHeight="500.0" prefWidth="333.0" styleClass="palco-dispositivo">
+              <ImageView fitHeight="500.0" fitWidth="333.0" preserveRatio="true">
+                <image><Image url="@../img/molde-celular.png" /></image>
+              </ImageView>
+              <Region maxHeight="2.0" maxWidth="82.0" prefHeight="2.0" prefWidth="82.0"
+                      translateX="35.0" translateY="-60.0"
+                      StackPane.alignment="CENTER_RIGHT" styleClass="conector-dispositivo" />
+              <VBox alignment="TOP_LEFT" maxHeight="430.0" maxWidth="208.0" prefHeight="430.0" spacing="9.0"
+                    translateY="10.0" styleClass="conteudo-dispositivo">
+                <HBox alignment="CENTER_LEFT" spacing="8.0">
+                  <ImageView fitHeight="30.0" fitWidth="30.0" preserveRatio="true">
+                    <image><Image url="@../img/rede-alerta-icon.png" /></image>
+                  </ImageView>
+                  <VBox spacing="0.0">
+                    <Label text="Estacao 04" styleClass="titulo-celular" />
+                    <Label text="Rio Verruga" styleClass="subtitulo-celular" />
+                  </VBox>
+                </HBox>
+                <Region prefHeight="4.0" />
+                <Label text="MENSAGEM" styleClass="rotulo-campo" />
+                <TextArea fx:id="campoMensagem" prefHeight="118.0" promptText="Digite a mensagem..."
+                          wrapText="true" styleClass="entrada-mensagem" />
+                <Button fx:id="botaoEnviar" text="Transmitir sinal" onAction="#enviar"
+                        maxWidth="Infinity" styleClass="botao-primario" />
+                <Button text="Usar exemplo" onAction="#carregarExemplo"
+                        maxWidth="Infinity" styleClass="botao-secundario" />
+                <VBox spacing="3.0" styleClass="cartao-mensagem-celular">
+                  <Label text="MENSAGEM NA ORIGEM" styleClass="rotulo-campo" />
+                  <Label fx:id="mensagemTransmitida" text="Nenhuma transmissao iniciada"
+                         wrapText="true" maxHeight="56.0" styleClass="mensagem-espera" />
+                </VBox>
+              </VBox>
+            </StackPane>
+          </VBox>
+
+          <VBox alignment="CENTER" prefWidth="510.0" spacing="12.0" styleClass="coluna-canal">
+            <VBox spacing="3.0" styleClass="cabecalho-canal">
+              <Label text="MEIO DE COMUNICACAO" styleClass="sobretitulo" />
+              <Label text="O sinal atravessa o canal" styleClass="titulo-secao" />
+              <Label text="Cada nivel sai do transmissor e chega ao receptor."
+                     styleClass="texto-canal" />
+            </VBox>
+
+            <StackPane prefHeight="190.0" prefWidth="590.0" styleClass="superficie-sinal">
+              <Canvas fx:id="canvasOnda" height="190.0" width="590.0" />
+            </StackPane>
+
+              <VBox spacing="11.0" styleClass="painel-controles">
+              <HBox spacing="14.0">
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                  <Label text="TIPO DE CODIFICACAO" styleClass="rotulo-campo" />
+                  <ComboBox fx:id="seletorCodificacao" maxWidth="Infinity" />
+                </VBox>
+                <VBox prefWidth="205.0" spacing="5.0">
+                  <HBox alignment="CENTER_LEFT">
+                    <Label text="VELOCIDADE" styleClass="rotulo-campo" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label fx:id="valorVelocidade" text="Lenta" styleClass="valor-velocidade" />
+                  </HBox>
+                  <Slider fx:id="controleVelocidade" blockIncrement="1.0" majorTickUnit="1.0"
+                          max="10.0" min="1.0" value="7.0" />
+                  <HBox>
+                    <Label text="Rapida" styleClass="rotulo-escala" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label text="Lenta" styleClass="rotulo-escala" />
+                  </HBox>
+                </VBox>
+              </HBox>
+            </VBox>
+          </VBox>
+
+          <VBox alignment="CENTER" spacing="4.0">
+            <Label text="RECEPTOR" styleClass="legenda-dispositivo" />
+            <StackPane prefHeight="500.0" prefWidth="333.0" styleClass="palco-dispositivo">
+              <ImageView fitHeight="500.0" fitWidth="333.0" preserveRatio="true">
+                <image><Image url="@../img/molde-celular.png" /></image>
+              </ImageView>
+              <Region maxHeight="2.0" maxWidth="82.0" prefHeight="2.0" prefWidth="82.0"
+                      translateX="-35.0" translateY="-60.0"
+                      StackPane.alignment="CENTER_LEFT" styleClass="conector-dispositivo" />
+              <VBox alignment="TOP_LEFT" maxHeight="430.0" maxWidth="208.0" prefHeight="430.0" spacing="10.0"
+                    translateY="10.0" styleClass="conteudo-dispositivo">
+                <HBox alignment="CENTER_LEFT" spacing="8.0">
+                  <ImageView fitHeight="30.0" fitWidth="30.0" preserveRatio="true">
+                    <image><Image url="@../img/rede-alerta-icon.png" /></image>
+                  </ImageView>
+                  <VBox spacing="0.0">
+                    <Label text="Defesa Civil" styleClass="titulo-celular" />
+                    <Label text="Central receptora" styleClass="subtitulo-celular" />
+                  </VBox>
+                </HBox>
+                <Region prefHeight="22.0" />
+                <VBox alignment="CENTER" spacing="8.0" styleClass="ilustracao-recepcao">
+                  <Label text="01" styleClass="simbolo-binario" />
+                  <Label text="DECODIFICACAO" styleClass="rotulo-campo" />
+                </VBox>
+                <VBox prefHeight="154.0" spacing="7.0" styleClass="painel-recebido">
+                  <Label text="MENSAGEM NO DESTINO" styleClass="rotulo-campo" />
+                  <Label fx:id="mensagemRecebida" text="Aguardando transmissao..."
+                         wrapText="true" styleClass="mensagem-espera" />
+                </VBox>
+                <Region VBox.vgrow="ALWAYS" />
+              </VBox>
+            </StackPane>
+          </VBox>
+        </HBox>
+
+      </VBox>
+    </center>
+  </BorderPane>
+</StackPane>
