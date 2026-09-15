@@ -9,9 +9,9 @@
 package model;
 import controller.ControladorPrincipal;
 public class CamadaFisicaReceptora {
-  private static final int SINAL_A_BAIXO = 0;
-  private static final int SINAL_B_ALTO = 1;
-  private static final int[] LISTA_AB = {SINAL_A_BAIXO, SINAL_B_ALTO};
+  private static final char SINAL_A_ALTO = 'A';
+  private static final char SINAL_B_BAIXO = 'B';
+  private static final char[] LISTA_AB = {SINAL_A_ALTO, SINAL_B_BAIXO};
 
   /* ***************************************************************
   * Metodo: CamadaFisicaReceptora
@@ -48,13 +48,14 @@ public class CamadaFisicaReceptora {
   *************************************************************** */
   public int[] CamadaFisicaReceptoraDecodificacaoManchester(int[] quadro) {
     if (quadro.length % 2 != 0) throw new IllegalArgumentException("Par incompleto.");
+    char[] sinais = converterNiveisParaListaAB(quadro);
     int[] fluxo = new int[quadro.length / 2];
     for (int i = 0; i < fluxo.length; i++) {
-      int primeiro = quadro[2 * i], segundo = quadro[2 * i + 1];
+      char primeiro = sinais[2 * i], segundo = sinais[2 * i + 1];
       boolean parAB = primeiro == LISTA_AB[0] && segundo == LISTA_AB[1];
       boolean parBA = primeiro == LISTA_AB[1] && segundo == LISTA_AB[0];
       if (!parAB && !parBA) throw new IllegalArgumentException("Transicao Manchester invalida.");
-      fluxo[i] = parAB ? 0 : 1;
+      fluxo[i] = parAB ? 1 : 0;
     }
     return fluxo;
   }
@@ -66,10 +67,11 @@ public class CamadaFisicaReceptora {
   *************************************************************** */
   public int[] CamadaFisicaReceptoraDecodificacaoManchesterDiferencial(int[] quadro) {
     if (quadro.length % 2 != 0) throw new IllegalArgumentException("Par incompleto.");
+    char[] sinais = converterNiveisParaListaAB(quadro);
     int[] fluxo = new int[quadro.length / 2];
-    int nivelAnterior = LISTA_AB[1];
+    char nivelAnterior = LISTA_AB[0];
     for (int i = 0; i < fluxo.length; i++) {
-      int primeiro = quadro[2 * i], segundo = quadro[2 * i + 1];
+      char primeiro = sinais[2 * i], segundo = sinais[2 * i + 1];
       boolean parAB = primeiro == LISTA_AB[0] && segundo == LISTA_AB[1];
       boolean parBA = primeiro == LISTA_AB[1] && segundo == LISTA_AB[0];
       if (!parAB && !parBA) throw new IllegalArgumentException("Transicao Manchester invalida.");
@@ -77,5 +79,21 @@ public class CamadaFisicaReceptora {
       nivelAnterior = segundo;
     }
     return fluxo;
+  }
+
+  /* ***************************************************************
+  * Metodo: converterNiveisParaListaAB
+  * Funcao: converter os niveis um e zero nos caracteres A e B
+  * Parametros: niveis = sinais recebidos do meio de comunicacao
+  * Retorno: char[] com a lista interna formada por A e B
+  *************************************************************** */
+  private char[] converterNiveisParaListaAB(int[] niveis) {
+    char[] sinais = new char[niveis.length];
+    for (int i = 0; i < niveis.length; i++) {
+      if (niveis[i] == 1) sinais[i] = SINAL_A_ALTO;
+      else if (niveis[i] == 0) sinais[i] = SINAL_B_BAIXO;
+      else throw new IllegalArgumentException("Nivel invalido.");
+    }
+    return sinais;
   }
 }

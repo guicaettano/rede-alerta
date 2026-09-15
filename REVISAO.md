@@ -27,8 +27,8 @@ corresponder as chamadas do slide.
 - Meio transfere exatamente o comprimento do vetor, sem sentinela de zeros.
 - Binaria retorna o mesmo vetor sem transformacao adicional.
 - Manchester e diferencial validam pares recebidos; diferencial inicia alto.
-- Manchester e diferencial usam internamente a lista AB, com A igual a zero
-  para nivel baixo e B igual a um para nivel alto.
+- Manchester e diferencial usam internamente uma lista char[] de sinais AB,
+  com A igual a um para nivel alto e B igual a zero para nivel baixo.
 - Atraso armazenado em campo volatile: o worker nao consulta o Slider.
 - Thread daemon, cancelamento no fechamento e interrupcao respeitada.
 - Falhas retornam a interface a um estado utilizavel; callbacks ignorados

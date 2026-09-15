@@ -9,9 +9,9 @@
 package model;
 import controller.ControladorPrincipal;
 public class CamadaFisicaTransmissora {
-  private static final int SINAL_A_BAIXO = 0;
-  private static final int SINAL_B_ALTO = 1;
-  private static final int[] LISTA_AB = {SINAL_A_BAIXO, SINAL_B_ALTO};
+  private static final char SINAL_A_ALTO = 'A';
+  private static final char SINAL_B_BAIXO = 'B';
+  private static final char[] LISTA_AB = {SINAL_A_ALTO, SINAL_B_BAIXO};
 
   /* ***************************************************************
   * Metodo: CamadaFisicaTransmissora
@@ -48,17 +48,17 @@ public class CamadaFisicaTransmissora {
   * Retorno: int[] com os niveis codificados
   *************************************************************** */
   public int[] CamadaFisicaTransmissoraCodificacaoManchester(int[] quadro) {
-    int[] fluxo = new int[quadro.length * 2];
+    char[] sinais = new char[quadro.length * 2];
     for (int i = 0; i < quadro.length; i++) {
       int bit = quadro[i];
       if (bit != 0 && bit != 1) throw new IllegalArgumentException("Bit invalido.");
-      // Na lista AB, A representa nivel baixo e B representa nivel alto.
-      int primeiro = bit == 0 ? LISTA_AB[0] : LISTA_AB[1];
-      int segundo = primeiro == LISTA_AB[0] ? LISTA_AB[1] : LISTA_AB[0];
-      fluxo[2 * i] = primeiro;
-      fluxo[2 * i + 1] = segundo;
+      // A representa nivel alto e B representa nivel baixo.
+      char primeiro = bit == 1 ? LISTA_AB[0] : LISTA_AB[1];
+      char segundo = primeiro == LISTA_AB[0] ? LISTA_AB[1] : LISTA_AB[0];
+      sinais[2 * i] = primeiro;
+      sinais[2 * i + 1] = segundo;
     }
-    return fluxo;
+    return converterListaABParaNiveis(sinais);
   }
   /* ***************************************************************
   * Metodo: CamadaFisicaTransmissoraCodificacaoManchesterDiferencial
@@ -67,19 +67,35 @@ public class CamadaFisicaTransmissora {
   * Retorno: int[] com os niveis codificados
   *************************************************************** */
   public int[] CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(int[] quadro) {
-    int[] fluxo = new int[quadro.length * 2];
-    int nivelAnterior = LISTA_AB[1];
+    char[] sinais = new char[quadro.length * 2];
+    char nivelAnterior = LISTA_AB[0];
     for (int i = 0; i < quadro.length; i++) {
       int bit = quadro[i];
       if (bit != 0 && bit != 1) throw new IllegalArgumentException("Bit invalido.");
       // O bit 0 troca A por B ou B por A no inicio do intervalo.
-      int sinalInvertido = nivelAnterior == LISTA_AB[0] ? LISTA_AB[1] : LISTA_AB[0];
-      int primeiro = bit == 0 ? sinalInvertido : nivelAnterior;
-      int segundo = primeiro == LISTA_AB[0] ? LISTA_AB[1] : LISTA_AB[0];
-      fluxo[2 * i] = primeiro;
-      fluxo[2 * i + 1] = segundo;
+      char sinalInvertido = nivelAnterior == LISTA_AB[0] ? LISTA_AB[1] : LISTA_AB[0];
+      char primeiro = bit == 0 ? sinalInvertido : nivelAnterior;
+      char segundo = primeiro == LISTA_AB[0] ? LISTA_AB[1] : LISTA_AB[0];
+      sinais[2 * i] = primeiro;
+      sinais[2 * i + 1] = segundo;
       nivelAnterior = segundo;
     }
-    return fluxo;
+    return converterListaABParaNiveis(sinais);
+  }
+
+  /* ***************************************************************
+  * Metodo: converterListaABParaNiveis
+  * Funcao: converter os caracteres A e B nos niveis um e zero
+  * Parametros: sinais = lista interna formada por A e B
+  * Retorno: int[] com os niveis usados pelo meio de comunicacao
+  *************************************************************** */
+  private int[] converterListaABParaNiveis(char[] sinais) {
+    int[] niveis = new int[sinais.length];
+    for (int i = 0; i < sinais.length; i++) {
+      if (sinais[i] == SINAL_A_ALTO) niveis[i] = 1;
+      else if (sinais[i] == SINAL_B_BAIXO) niveis[i] = 0;
+      else throw new IllegalArgumentException("Sinal AB invalido.");
+    }
+    return niveis;
   }
 }

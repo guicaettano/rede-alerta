@@ -14,9 +14,10 @@ comunicacao simulado.
 - **Manchester Diferencial:** sempre existe uma transicao no meio do bit; o bit
   `0` tambem causa transicao no inicio. O nivel inicial adotado e alto.
 
-Nas duas codificacoes Manchester, a representacao interna usa a lista `AB`:
-`A = 0` representa nivel baixo e `B = 1` representa nivel alto. Os metodos
-continuam retornando `int[]`, conforme as assinaturas fornecidas no PDF.
+Nas duas codificacoes Manchester, a representacao interna usa uma lista
+`char[]` formada por `A` e `B`: `A = 1` representa nivel alto e `B = 0`
+representa nivel baixo. Os metodos continuam retornando `int[]`, conforme as
+assinaturas fornecidas no PDF.
 
 A mesma convencao e usada pelo codificador e pelo decodificador.
 
