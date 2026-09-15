@@ -9,6 +9,10 @@
 package model;
 import controller.ControladorPrincipal;
 public class CamadaFisicaTransmissora {
+  private static final int SINAL_A_BAIXO = 0;
+  private static final int SINAL_B_ALTO = 1;
+  private static final int[] LISTA_AB = {SINAL_A_BAIXO, SINAL_B_ALTO};
+
   /* ***************************************************************
   * Metodo: CamadaFisicaTransmissora
   * Funcao: selecionar a codificacao e enviar os bits ao meio
@@ -48,10 +52,11 @@ public class CamadaFisicaTransmissora {
     for (int i = 0; i < quadro.length; i++) {
       int bit = quadro[i];
       if (bit != 0 && bit != 1) throw new IllegalArgumentException("Bit invalido.");
-      // Manchester representa 0 por 01 e 1 por 10.
-      int primeiro = bit;
+      // Na lista AB, A representa nivel baixo e B representa nivel alto.
+      int primeiro = bit == 0 ? LISTA_AB[0] : LISTA_AB[1];
+      int segundo = primeiro == LISTA_AB[0] ? LISTA_AB[1] : LISTA_AB[0];
       fluxo[2 * i] = primeiro;
-      fluxo[2 * i + 1] = 1 - primeiro;
+      fluxo[2 * i + 1] = segundo;
     }
     return fluxo;
   }
@@ -63,15 +68,17 @@ public class CamadaFisicaTransmissora {
   *************************************************************** */
   public int[] CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(int[] quadro) {
     int[] fluxo = new int[quadro.length * 2];
-    int nivelAnterior = 1;
+    int nivelAnterior = LISTA_AB[1];
     for (int i = 0; i < quadro.length; i++) {
       int bit = quadro[i];
       if (bit != 0 && bit != 1) throw new IllegalArgumentException("Bit invalido.");
-      // O bit 0 provoca transicao no inicio; sempre ha transicao no meio.
-      int primeiro = bit == 0 ? 1 - nivelAnterior : nivelAnterior;
+      // O bit 0 troca A por B ou B por A no inicio do intervalo.
+      int sinalInvertido = nivelAnterior == LISTA_AB[0] ? LISTA_AB[1] : LISTA_AB[0];
+      int primeiro = bit == 0 ? sinalInvertido : nivelAnterior;
+      int segundo = primeiro == LISTA_AB[0] ? LISTA_AB[1] : LISTA_AB[0];
       fluxo[2 * i] = primeiro;
-      fluxo[2 * i + 1] = 1 - primeiro;
-      nivelAnterior = 1 - primeiro;
+      fluxo[2 * i + 1] = segundo;
+      nivelAnterior = segundo;
     }
     return fluxo;
   }

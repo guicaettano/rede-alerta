@@ -9,6 +9,10 @@
 package model;
 import controller.ControladorPrincipal;
 public class CamadaFisicaReceptora {
+  private static final int SINAL_A_BAIXO = 0;
+  private static final int SINAL_B_ALTO = 1;
+  private static final int[] LISTA_AB = {SINAL_A_BAIXO, SINAL_B_ALTO};
+
   /* ***************************************************************
   * Metodo: CamadaFisicaReceptora
   * Funcao: selecionar a decodificacao e encaminhar o quadro
@@ -47,9 +51,10 @@ public class CamadaFisicaReceptora {
     int[] fluxo = new int[quadro.length / 2];
     for (int i = 0; i < fluxo.length; i++) {
       int primeiro = quadro[2 * i], segundo = quadro[2 * i + 1];
-      if ((primeiro != 0 && primeiro != 1) || segundo != 1 - primeiro)
-        throw new IllegalArgumentException("Transicao Manchester invalida.");
-      fluxo[i] = primeiro;
+      boolean parAB = primeiro == LISTA_AB[0] && segundo == LISTA_AB[1];
+      boolean parBA = primeiro == LISTA_AB[1] && segundo == LISTA_AB[0];
+      if (!parAB && !parBA) throw new IllegalArgumentException("Transicao Manchester invalida.");
+      fluxo[i] = parAB ? 0 : 1;
     }
     return fluxo;
   }
@@ -62,11 +67,12 @@ public class CamadaFisicaReceptora {
   public int[] CamadaFisicaReceptoraDecodificacaoManchesterDiferencial(int[] quadro) {
     if (quadro.length % 2 != 0) throw new IllegalArgumentException("Par incompleto.");
     int[] fluxo = new int[quadro.length / 2];
-    int nivelAnterior = 1;
+    int nivelAnterior = LISTA_AB[1];
     for (int i = 0; i < fluxo.length; i++) {
       int primeiro = quadro[2 * i], segundo = quadro[2 * i + 1];
-      if ((primeiro != 0 && primeiro != 1) || segundo != 1 - primeiro)
-        throw new IllegalArgumentException("Transicao Manchester invalida.");
+      boolean parAB = primeiro == LISTA_AB[0] && segundo == LISTA_AB[1];
+      boolean parBA = primeiro == LISTA_AB[1] && segundo == LISTA_AB[0];
+      if (!parAB && !parBA) throw new IllegalArgumentException("Transicao Manchester invalida.");
       fluxo[i] = primeiro == nivelAnterior ? 1 : 0;
       nivelAnterior = segundo;
     }
