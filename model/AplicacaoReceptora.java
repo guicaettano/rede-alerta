@@ -4,28 +4,30 @@
 * Inicio...........: 05/09/2026
 * Ultima alteracao.: 15/09/2026
 * Nome.............: AplicacaoReceptora
-* Funcao...........: Exibir na GUI a mensagem recebida
+* Funcao...........: Entregar a mensagem recebida para a interface
 *************************************************************** */
 package model;
-import controller.ControladorPrincipal;
+
 public class AplicacaoReceptora {
-  private final ControladorPrincipal controlador;
-
   /* ***************************************************************
-  * Metodo: AplicacaoReceptora
-  * Funcao: associar a aplicacao receptora ao controlador da GUI
-  * Parametros: controlador = controlador principal da interface
-  * Retorno: objeto AplicacaoReceptora
+  * Metodo: exibir
+  * Funcao: remover o preenchimento e exibir a mensagem no destino
+  * Parametros: mensagem = texto reconstruido pela camada de aplicacao
+  * Retorno: void
   *************************************************************** */
-  public AplicacaoReceptora(ControladorPrincipal controlador) { this.controlador = controlador; }
+  public static void exibir(String mensagem) {
+    int fim = mensagem.indexOf(0);
+    if (fim >= 0) mensagem = mensagem.substring(0, fim);
+    Estado.controlador.exibirMensagemRecebida(mensagem);
+  }
 
   /* ***************************************************************
   * Metodo: AplicacaoReceptora
-  * Funcao: entregar a mensagem recebida para exibicao na interface
+  * Funcao: manter o nome de metodo definido no framework do trabalho
   * Parametros: mensagem = texto reconstruido no destino
   * Retorno: void
   *************************************************************** */
   public void AplicacaoReceptora(String mensagem) {
-    controlador.exibirMensagemRecebida(mensagem);
+    exibir(mensagem);
   }
 }

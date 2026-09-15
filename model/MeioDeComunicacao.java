@@ -4,60 +4,68 @@
 * Inicio...........: 05/09/2026
 * Ultima alteracao.: 15/09/2026
 * Nome.............: MeioDeComunicacao
-* Funcao...........: Simular a transferencia de bits entre os pontos A e B
+* Funcao...........: Transportar a lista de sinais entre os pontos A e B
 *************************************************************** */
 package model;
-import controller.ControladorPrincipal;
+
 public class MeioDeComunicacao {
-  private final ControladorPrincipal controlador;
-  private volatile Thread transmissao;
+  private static volatile Thread transmissao;
 
   /* ***************************************************************
-  * Metodo: MeioDeComunicacao
-  * Funcao: associar o meio de comunicacao ao controlador da GUI
-  * Parametros: controlador = controlador principal da interface
-  * Retorno: objeto MeioDeComunicacao
-  *************************************************************** */
-  public MeioDeComunicacao(ControladorPrincipal controlador) { this.controlador = controlador; }
-
-  /* ***************************************************************
-  * Metodo: MeioDeComunicacao
-  * Funcao: transferir cada bit do ponto A para o ponto B
-  * Parametros: fluxoBrutoDeBits = niveis produzidos pelo transmissor
+  * Metodo: transportar
+  * Funcao: transferir cada sinal do ponto A para o ponto B
+  * Parametros: fluxoBrutoDeBits = lista de sinais A e B
   * Retorno: void
   *************************************************************** */
-  public void MeioDeComunicacao(int[] fluxoBrutoDeBits) {
-    final int[] fluxoBrutoDeBitsPontoA = fluxoBrutoDeBits.clone();
-    final int[] fluxoBrutoDeBitsPontoB = new int[fluxoBrutoDeBitsPontoA.length];
+  public static void transportar(char[] fluxoBrutoDeBits) {
+    final char[] fluxoBrutoDeBitsPontoA = fluxoBrutoDeBits.clone();
+    final char[] fluxoBrutoDeBitsPontoB = new char[fluxoBrutoDeBitsPontoA.length];
+    Estado.controlador.registrarQuantidadeBits(fluxoBrutoDeBitsPontoA.length);
+
     transmissao = new Thread(() -> {
       try {
         int indice = 0;
         while (indice < fluxoBrutoDeBitsPontoA.length) {
           if (Thread.currentThread().isInterrupted()) throw new InterruptedException();
           fluxoBrutoDeBitsPontoB[indice] = fluxoBrutoDeBitsPontoA[indice];
-          controlador.atualizaSinal(fluxoBrutoDeBitsPontoB[indice], -1);
+          char ultimoSinal = indice == 0 ? fluxoBrutoDeBitsPontoB[indice]
+              : fluxoBrutoDeBitsPontoB[indice - 1];
+          Estado.controlador.atualizaSinal(fluxoBrutoDeBitsPontoB[indice], ultimoSinal);
           indice++;
-          Thread.sleep(controlador.obterAtraso());
+          Thread.sleep(Estado.controlador.obterAtraso());
         }
         if (Thread.currentThread().isInterrupted()) throw new InterruptedException();
-        ControladorPrincipal.camadaFisicaReceptora.CamadaFisicaReceptora(fluxoBrutoDeBitsPontoB);
+        CamadaFisicaReceptora.enviarParaCamadaDeAplicacao(fluxoBrutoDeBitsPontoB);
       } catch (InterruptedException erro) {
         Thread.currentThread().interrupt();
-        controlador.informarErro("Transmissao cancelada.");
+        Estado.controlador.informarErro("Transmissao cancelada.");
       } catch (RuntimeException erro) {
-        controlador.informarErro("Falha: " + erro.getMessage());
+        Estado.controlador.informarErro("Falha: " + erro.getMessage());
       }
     }, "transmissao");
     transmissao.setDaemon(true);
     transmissao.start();
   }
+
+  /* ***************************************************************
+  * Metodo: MeioDeComunicacao
+  * Funcao: manter o nome de metodo definido no framework do trabalho
+  * Parametros: fluxoBrutoDeBits = niveis um e zero
+  * Retorno: void
+  *************************************************************** */
+  public void MeioDeComunicacao(int[] fluxoBrutoDeBits) {
+    char[] sinais = new char[fluxoBrutoDeBits.length];
+    for (int i = 0; i < sinais.length; i++) sinais[i] = fluxoBrutoDeBits[i] == 1 ? 'A' : 'B';
+    transportar(sinais);
+  }
+
   /* ***************************************************************
   * Metodo: cancelar
   * Funcao: interromper uma transmissao que esteja em andamento
   * Parametros: nenhum
   * Retorno: void
   *************************************************************** */
-  public void cancelar() {
+  public static void cancelar() {
     Thread atual = transmissao;
     if (atual != null) atual.interrupt();
   }

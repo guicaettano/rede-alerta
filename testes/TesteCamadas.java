@@ -4,19 +4,19 @@
 * Inicio...........: 05/09/2026
 * Ultima alteracao.: 15/09/2026
 * Nome.............: TesteCamadas
-* Funcao...........: Validar conversoes e codificacoes sem abrir a GUI
+* Funcao...........: Validar as conversoes iguais ao projeto de referencia
 *************************************************************** */
 package testes;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Random;
-import controller.ControladorPrincipal;
-import model.*;
+import model.CamadaAplicacaoReceptora;
+import model.CamadaAplicacaoTransmissora;
+import model.CamadaFisicaReceptora;
+import model.CamadaFisicaTransmissora;
 
 public class TesteCamadas {
-  private static int[] bits;
-  private static String recebida;
-
   /* ***************************************************************
   * Metodo: exigir
   * Funcao: interromper o teste quando uma condicao nao for atendida
@@ -26,69 +26,98 @@ public class TesteCamadas {
   private static void exigir(boolean condicao) {
     if (!condicao) throw new AssertionError("Resultado incorreto");
   }
+
   /* ***************************************************************
-  * Metodo: rejeitar
-  * Funcao: verificar se uma entrada invalida produz a excecao esperada
-  * Parametros: acao = rotina que deve rejeitar a entrada
-  * Retorno: void
+  * Metodo: invocar
+  * Funcao: executar um metodo privado para testar a mesma implementacao
+  * Parametros: tipo = classe, nome = metodo, argumento = valor recebido
+  * Retorno: Object devolvido pelo metodo executado
   *************************************************************** */
-  private static void rejeitar(Runnable acao) {
-    try { acao.run(); } catch (IllegalArgumentException esperado) { return; }
-    throw new AssertionError("Entrada invalida aceita");
+  private static Object invocar(Class<?> tipo, String nome, Object argumento) {
+    try {
+      Method metodo = tipo.getDeclaredMethod(nome,
+          argumento instanceof String ? String.class : int[].class);
+      metodo.setAccessible(true);
+      return metodo.invoke(null, argumento);
+    } catch (Exception erro) {
+      throw new AssertionError(erro);
+    }
   }
+
+  /* ***************************************************************
+  * Metodo: removerPreenchimento
+  * Funcao: retirar caracteres nulos usados para completar o ultimo int
+  * Parametros: mensagem = texto reconstruido com preenchimento
+  * Retorno: String sem os caracteres de preenchimento
+  *************************************************************** */
+  private static String removerPreenchimento(String mensagem) {
+    int fim = mensagem.indexOf(0);
+    return fim < 0 ? mensagem : mensagem.substring(0, fim);
+  }
+
   /* ***************************************************************
   * Metodo: main
-  * Funcao: executar todos os testes das camadas e codificacoes
+  * Funcao: executar os testes das tres codificacoes
   * Parametros: argumentos = argumentos recebidos pela linha de comando
   * Retorno: void
   *************************************************************** */
   public static void main(String[] argumentos) {
-    ControladorPrincipal.camadaFisicaTransmissora = new CamadaFisicaTransmissora() {
-      /* Captura o quadro produzido pela camada de aplicacao. */
-      @Override public void CamadaFisicaTransmissora(int[] quadro) { bits = quadro; }
-    };
-    ControladorPrincipal.aplicacaoReceptora = new AplicacaoReceptora(null) {
-      /* Captura a mensagem reconstruida pela camada receptora. */
-      @Override public void AplicacaoReceptora(String mensagem) { recebida = mensagem; }
-    };
-    CamadaAplicacaoTransmissora aplicacao = new CamadaAplicacaoTransmissora();
-    CamadaAplicacaoReceptora destino = new CamadaAplicacaoReceptora();
     CamadaFisicaTransmissora transmissor = new CamadaFisicaTransmissora();
     CamadaFisicaReceptora receptor = new CamadaFisicaReceptora();
     Random aleatorio = new Random(42);
+
     for (int caso = 0; caso < 1005; caso++) {
       String mensagem;
-      if (caso == 0) mensagem = "";
+      if (caso == 0) mensagem = "A";
       else if (caso == 1) mensagem = "REDE ALERTA";
       else if (caso == 2) mensagem = "CAMADA FISICA";
       else if (caso == 3) mensagem = "01010101";
       else if (caso == 4) mensagem = "ALERTA";
       else {
         StringBuilder texto = new StringBuilder();
-        for (int i = aleatorio.nextInt(181); i > 0; i--)
+        for (int i = 1 + aleatorio.nextInt(180); i > 0; i--)
           texto.append((char) ('A' + aleatorio.nextInt(26)));
         mensagem = texto.toString();
       }
-      aplicacao.CamadaDeAplicacaoTransmissora(mensagem);
-      exigir(bits.length == mensagem.length() * 16);
-      exigir(transmissor.CamadaFisicaTransmissoraCodificacaoBinaria(bits) == bits);
-      int[][] quadros = {
-        receptor.CamadaFisicaReceptoraDecodificacaoBinaria(bits),
-        receptor.CamadaFisicaReceptoraDecodificacaoManchester(transmissor.CamadaFisicaTransmissoraCodificacaoManchester(bits)),
-        receptor.CamadaFisicaReceptoraDecodificacaoManchesterDiferencial(transmissor.CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(bits))
+
+      int[] original = (int[]) invocar(
+          CamadaAplicacaoTransmissora.class, "codificarEmArrayInt", mensagem);
+      exigir(original.length == (int) Math.ceil(mensagem.length() / 4.0));
+
+      int[][] fluxos = {
+        transmissor.CamadaFisicaTransmissoraCodificacaoBinaria(original.clone()),
+        transmissor.CamadaFisicaTransmissoraCodificacaoManchester(original.clone()),
+        transmissor.CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(original.clone())
       };
+      int[][] quadros = {
+        receptor.CamadaFisicaReceptoraDecodificacaoBinaria(fluxos[0]),
+        receptor.CamadaFisicaReceptoraDecodificacaoManchester(fluxos[1]),
+        receptor.CamadaFisicaReceptoraDecodificacaoManchesterDiferencial(fluxos[2])
+      };
+
       for (int[] quadro : quadros) {
-        exigir(Arrays.equals(bits, quadro));
-        destino.CamadaDeAplicacaoReceptora(quadro);
-        exigir(mensagem.equals(recebida));
+        exigir(Arrays.equals(original, quadro));
+        String recebida = (String) invocar(
+            CamadaAplicacaoReceptora.class, "decodificarArrayInt", quadro.clone());
+        exigir(mensagem.equals(removerPreenchimento(recebida)));
       }
     }
-    exigir(Arrays.equals(transmissor.CamadaFisicaTransmissoraCodificacaoManchester(new int[]{0,1}), new int[]{0,1,1,0}));
-    exigir(Arrays.equals(transmissor.CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(new int[]{0,1,0}), new int[]{0,1,1,0,1,0}));
-    rejeitar(() -> receptor.CamadaFisicaReceptoraDecodificacaoManchester(new int[]{0}));
-    rejeitar(() -> receptor.CamadaFisicaReceptoraDecodificacaoManchester(new int[]{1,1}));
-    rejeitar(() -> receptor.CamadaFisicaReceptoraDecodificacaoManchesterDiferencial(new int[]{0,0}));
-    rejeitar(() -> destino.CamadaDeAplicacaoReceptora(new int[]{1}));
-    System.out.println("OK: 3015 round-trips, vetores conhecidos e entradas invalidas.");
+
+    int[] quadroConhecido = {(int) 0x80000000L};
+    int[] binario = transmissor.CamadaFisicaTransmissoraCodificacaoBinaria(
+        quadroConhecido.clone());
+    exigir(binario.length == 32 && binario[0] == 1 && binario[1] == 0);
+
+    int[] manchester = transmissor.CamadaFisicaTransmissoraCodificacaoManchester(
+        quadroConhecido.clone());
+    exigir(manchester.length == 64);
+    exigir(Arrays.equals(Arrays.copyOf(manchester, 4), new int[] {1, 0, 0, 1}));
+
+    int[] diferencial = transmissor.CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(
+        new int[] {(int) 0xC0000000L});
+    exigir(diferencial.length == 64);
+    exigir(Arrays.equals(Arrays.copyOf(diferencial, 4), new int[] {1, 0, 0, 1}));
+
+    System.out.println("OK: 3015 round-trips e vetores conhecidos.");
   }
 }

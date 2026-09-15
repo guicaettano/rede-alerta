@@ -4,30 +4,30 @@
 * Inicio...........: 05/09/2026
 * Ultima alteracao.: 15/09/2026
 * Nome.............: AplicacaoTransmissora
-* Funcao...........: Obter a mensagem e iniciar sua transmissao
+* Funcao...........: Iniciar o envio da mensagem pela pilha de camadas
 *************************************************************** */
 package model;
-import controller.ControladorPrincipal;
+
 public class AplicacaoTransmissora {
-  private final ControladorPrincipal controlador;
-
   /* ***************************************************************
-  * Metodo: AplicacaoTransmissora
-  * Funcao: associar a aplicacao transmissora ao controlador da GUI
-  * Parametros: controlador = controlador principal da interface
-  * Retorno: objeto AplicacaoTransmissora
+  * Metodo: enviarParaCamadaDeAplicacao
+  * Funcao: encaminhar a mensagem para a camada de aplicacao
+  * Parametros: mensagem = texto digitado pelo usuario
+  * Retorno: void
   *************************************************************** */
-  public AplicacaoTransmissora(ControladorPrincipal controlador) { this.controlador = controlador; }
+  public static void enviarParaCamadaDeAplicacao(String mensagem) {
+    CamadaAplicacaoTransmissora.enviarParaCamadaFisica(mensagem);
+  }
 
   /* ***************************************************************
   * Metodo: AplicacaoTransmissora
-  * Funcao: obter a mensagem e chamar a camada de aplicacao transmissora
+  * Funcao: manter o nome de metodo definido no framework do trabalho
   * Parametros: nenhum
   * Retorno: void
   *************************************************************** */
   public void AplicacaoTransmissora() {
-    String mensagem = controlador.obterMensagem();
-    controlador.definirMensagemTransmissor(mensagem);
-    ControladorPrincipal.camadaAplicacaoTransmissora.CamadaDeAplicacaoTransmissora(mensagem);
+    String mensagem = Estado.controlador.obterMensagem();
+    Estado.controlador.definirMensagemTransmissor(mensagem);
+    enviarParaCamadaDeAplicacao(mensagem);
   }
 }

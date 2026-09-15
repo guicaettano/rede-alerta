@@ -20,13 +20,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.paint.Color;
-import model.AplicacaoReceptora;
 import model.AplicacaoTransmissora;
-import model.CamadaAplicacaoReceptora;
-import model.CamadaAplicacaoTransmissora;
-import model.CamadaFisicaReceptora;
-import model.CamadaFisicaTransmissora;
+import model.Estado;
 import model.MeioDeComunicacao;
+import model.TipoDeCodificacaoEnum;
 import util.Configuracao;
 
 public class ControladorPrincipal {
@@ -44,8 +41,6 @@ public class ControladorPrincipal {
   private int quantidadeBitsTransmitidos;
   private int quantidadeBitsDoFluxo;
   private volatile long atraso = Configuracao.calcularAtraso(7);
-  private static volatile int codificacaoAtiva;
-  private static ControladorPrincipal instancia;
   private boolean fechado;
 
   /* ***************************************************************
@@ -55,7 +50,7 @@ public class ControladorPrincipal {
   * Retorno: int correspondente a codificacao ativa
   *************************************************************** */
   public static int obterCodificacaoAtiva() {
-    return codificacaoAtiva;
+    return Estado.tipoDeCodificacao.ordinal();
   }
 
   /* ***************************************************************
@@ -86,25 +81,18 @@ public class ControladorPrincipal {
   *************************************************************** */
   public void fechar() {
     fechado = true;
-    if (meioDeComunicacao != null) meioDeComunicacao.cancelar();
+    MeioDeComunicacao.cancelar();
   }
+
   /* ***************************************************************
   * Metodo: registrarQuantidadeBits
   * Funcao: registrar o tamanho do fluxo para posicionar a onda
-  * Parametros: quadro = bits originais, fluxo = niveis codificados
+  * Parametros: quantidade = numero de sinais do fluxo codificado
   * Retorno: void
   *************************************************************** */
-  public static void registrarQuantidadeBits(int[] quadro, int[] fluxo) {
-    instancia.quantidadeBitsDoFluxo = fluxo.length;
+  public void registrarQuantidadeBits(int quantidade) {
+    quantidadeBitsDoFluxo = quantidade;
   }
-
-  public static AplicacaoTransmissora aplicacaoTransmissora;
-  public static CamadaAplicacaoTransmissora camadaAplicacaoTransmissora;
-  public static CamadaFisicaTransmissora camadaFisicaTransmissora;
-  public static MeioDeComunicacao meioDeComunicacao;
-  public static CamadaFisicaReceptora camadaFisicaReceptora;
-  public static CamadaAplicacaoReceptora camadaAplicacaoReceptora;
-  public static AplicacaoReceptora aplicacaoReceptora;
 
   /* ***************************************************************
   * Metodo: initialize
@@ -114,7 +102,8 @@ public class ControladorPrincipal {
   *************************************************************** */
   @FXML
   private void initialize() {
-    instancia = this;
+    Estado.controlador = this;
+    Estado.tipoDeCodificacao = TipoDeCodificacaoEnum.MANCHESTER;
     seletorCodificacao.getItems().setAll(
         "Binaria (NRZ-L)", "Manchester", "Manchester Diferencial");
     seletorCodificacao.getSelectionModel().select(1);
@@ -128,25 +117,8 @@ public class ControladorPrincipal {
     });
 
     valorVelocidade.setText("Lenta");
-    montarCamadasDoFramework();
     desenharOnda();
     campoMensagem.setText("SOS");
-  }
-
-  /* ***************************************************************
-  * Metodo: montarCamadasDoFramework
-  * Funcao: instanciar as sete classes definidas pelo framework
-  * Parametros: nenhum
-  * Retorno: void
-  *************************************************************** */
-  private void montarCamadasDoFramework() {
-    aplicacaoTransmissora = new AplicacaoTransmissora(this);
-    camadaAplicacaoTransmissora = new CamadaAplicacaoTransmissora();
-    camadaFisicaTransmissora = new CamadaFisicaTransmissora();
-    meioDeComunicacao = new MeioDeComunicacao(this);
-    camadaFisicaReceptora = new CamadaFisicaReceptora();
-    camadaAplicacaoReceptora = new CamadaAplicacaoReceptora();
-    aplicacaoReceptora = new AplicacaoReceptora(this);
   }
 
   /* ***************************************************************
@@ -167,9 +139,11 @@ public class ControladorPrincipal {
       return;
     }
 
-    codificacaoAtiva = obterCodificacao();
+    int codificacao = obterCodificacao();
+    Estado.tipoDeCodificacao = TipoDeCodificacaoEnum.values()[codificacao];
     prepararNovaTransmissao();
-    try { aplicacaoTransmissora.AplicacaoTransmissora(); }
+    definirMensagemTransmissor(mensagem);
+    try { AplicacaoTransmissora.enviarParaCamadaDeAplicacao(mensagem); }
     catch (RuntimeException erro) { informarErro("Falha: " + erro.getMessage()); }
   }
 
@@ -247,6 +221,16 @@ public class ControladorPrincipal {
       quantidadeBitsTransmitidos++;
       desenharOnda();
     });
+  }
+
+  /* ***************************************************************
+  * Metodo: atualizaSinal
+  * Funcao: adaptar os sinais A e B para o desenho da forma de onda
+  * Parametros: sinal = nivel atual, ultimoSinal = nivel anterior
+  * Retorno: void
+  *************************************************************** */
+  public void atualizaSinal(char sinal, char ultimoSinal) {
+    atualizaSinal(sinal == 'A' ? 1 : 0, ultimoSinal == 'A' ? 1 : 0);
   }
 
   /* ***************************************************************

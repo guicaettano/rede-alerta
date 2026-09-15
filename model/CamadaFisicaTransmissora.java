@@ -7,95 +7,173 @@
 * Funcao...........: Aplicar a codificacao fisica selecionada
 *************************************************************** */
 package model;
-import controller.ControladorPrincipal;
+
 public class CamadaFisicaTransmissora {
-  private static final char SINAL_A_ALTO = 'A';
-  private static final char SINAL_B_BAIXO = 'B';
-  private static final char[] LISTA_AB = {SINAL_A_ALTO, SINAL_B_BAIXO};
+  /* ***************************************************************
+  * Metodo: enviarPelaRede
+  * Funcao: selecionar a codificacao e enviar os sinais ao meio
+  * Parametros: quadro = inteiros produzidos pela camada de aplicacao
+  * Retorno: void
+  *************************************************************** */
+  public static void enviarPelaRede(int[] quadro) {
+    char[] fluxoBrutoDeBits;
+
+    switch (Estado.tipoDeCodificacao) {
+      case BINARIA:
+        fluxoBrutoDeBits = codificacaoBinaria(quadro);
+        break;
+      case MANCHESTER:
+        fluxoBrutoDeBits = codificacaoManchester(quadro);
+        break;
+      default:
+        fluxoBrutoDeBits = codificacaoManchesterDiferencial(quadro);
+    }
+
+    MeioDeComunicacao.transportar(fluxoBrutoDeBits);
+  }
+
+  /* ***************************************************************
+  * Metodo: codificacaoBinaria
+  * Funcao: representar cada bit por um sinal A ou B
+  * Parametros: quadro = inteiros com os bits da mensagem
+  * Retorno: char[] com a lista de sinais A e B
+  *************************************************************** */
+  private static char[] codificacaoBinaria(int[] quadro) {
+    char[] sinais = new char[quadro.length * 32];
+
+    for (int i = 0; i < quadro.length; i++) {
+      for (int j = 0; j < 32; j++) {
+        sinais[j + i * 32] = lerBit(quadro, i) == 1 ? 'A' : 'B';
+      }
+    }
+    return sinais;
+  }
+
+  /* ***************************************************************
+  * Metodo: codificacaoManchester
+  * Funcao: converter cada bit em um par Manchester
+  * Parametros: quadro = inteiros com os bits da mensagem
+  * Retorno: char[] com a lista de sinais A e B
+  *************************************************************** */
+  private static char[] codificacaoManchester(int[] quadro) {
+    char[] sinais = new char[quadro.length * 64];
+
+    for (int i = 0; i < quadro.length; i++) {
+      for (int j = 0; j < 32; j++) {
+        bitParaManchester(lerBit(quadro, i), sinais, i, j);
+      }
+    }
+    return sinais;
+  }
+
+  /* ***************************************************************
+  * Metodo: codificacaoManchesterDiferencial
+  * Funcao: codificar mudancas de bit com Manchester Diferencial
+  * Parametros: quadro = inteiros com os bits da mensagem
+  * Retorno: char[] com a lista de sinais A e B
+  *************************************************************** */
+  private static char[] codificacaoManchesterDiferencial(int[] quadro) {
+    char[] sinais = new char[quadro.length * 64];
+    int bitAnterior = 0;
+
+    for (int i = 0; i < quadro.length; i++) {
+      for (int j = 0; j < 32; j++) {
+        int bit = lerBit(quadro, i);
+
+        if (i == 0 && j == 0) {
+          bitParaManchester(bit, sinais, i, j);
+          bitAnterior = bit;
+        } else {
+          if (bit == 1) {
+            bitAnterior = 1 - bitAnterior;
+            bitParaManchester(bitAnterior, sinais, i, j);
+          } else {
+            bitParaManchester(bitAnterior, sinais, i, j);
+          }
+        }
+      }
+    }
+    return sinais;
+  }
+
+  /* ***************************************************************
+  * Metodo: lerBit
+  * Funcao: ler o bit mais significativo e deslocar o inteiro
+  * Parametros: quadro = vetor lido, indiceContainer = int atual
+  * Retorno: int com zero ou um
+  *************************************************************** */
+  private static int lerBit(int[] quadro, int indiceContainer) {
+    int mascara = 1 << 31;
+    int bit = (quadro[indiceContainer] & mascara) >>> 31;
+    quadro[indiceContainer] <<= 1;
+    return bit;
+  }
+
+  /* ***************************************************************
+  * Metodo: bitParaManchester
+  * Funcao: gravar AB para um e BA para zero
+  * Parametros: bit = valor, sinais = destino, i e j = indices atuais
+  * Retorno: void
+  *************************************************************** */
+  private static void bitParaManchester(int bit, char[] sinais, int i, int j) {
+    if (bit == 1) {
+      sinais[j * 2 + i * 64] = 'A';
+      sinais[j * 2 + 1 + i * 64] = 'B';
+    } else {
+      sinais[j * 2 + i * 64] = 'B';
+      sinais[j * 2 + 1 + i * 64] = 'A';
+    }
+  }
 
   /* ***************************************************************
   * Metodo: CamadaFisicaTransmissora
-  * Funcao: selecionar a codificacao e enviar os bits ao meio
-  * Parametros: quadro = bits produzidos pela camada de aplicacao
+  * Funcao: manter o nome de metodo definido no framework do trabalho
+  * Parametros: quadro = inteiros produzidos pela camada de aplicacao
   * Retorno: void
   *************************************************************** */
   public void CamadaFisicaTransmissora(int[] quadro) {
-    int tipoDeCodificacao = ControladorPrincipal.obterCodificacaoAtiva();
-    int[] fluxoBrutoDeBits;
-    switch (tipoDeCodificacao) {
-      case 0: fluxoBrutoDeBits = CamadaFisicaTransmissoraCodificacaoBinaria(quadro); break;
-      case 1: fluxoBrutoDeBits = CamadaFisicaTransmissoraCodificacaoManchester(quadro); break;
-      case 2: fluxoBrutoDeBits = CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(quadro); break;
-      default: throw new IllegalArgumentException("Codificacao invalida.");
-    }
-    ControladorPrincipal.registrarQuantidadeBits(quadro, fluxoBrutoDeBits);
-    ControladorPrincipal.meioDeComunicacao.MeioDeComunicacao(fluxoBrutoDeBits);
+    enviarPelaRede(quadro);
   }
+
   /* ***************************************************************
   * Metodo: CamadaFisicaTransmissoraCodificacaoBinaria
-  * Funcao: manter o quadro na codificacao binaria original
-  * Parametros: quadro = vetor de bits a ser transmitido
-  * Retorno: int[] com os bits sem alteracao
+  * Funcao: disponibilizar a codificacao binaria exigida no framework
+  * Parametros: quadro = inteiros com os bits da mensagem
+  * Retorno: int[] com A representado por um e B por zero
   *************************************************************** */
   public int[] CamadaFisicaTransmissoraCodificacaoBinaria(int[] quadro) {
-    return quadro;
+    return sinaisParaNiveis(codificacaoBinaria(quadro));
   }
 
   /* ***************************************************************
   * Metodo: CamadaFisicaTransmissoraCodificacaoManchester
-  * Funcao: codificar cada bit em dois niveis Manchester
-  * Parametros: quadro = vetor de bits a ser codificado
-  * Retorno: int[] com os niveis codificados
+  * Funcao: disponibilizar a codificacao Manchester do framework
+  * Parametros: quadro = inteiros com os bits da mensagem
+  * Retorno: int[] com A representado por um e B por zero
   *************************************************************** */
   public int[] CamadaFisicaTransmissoraCodificacaoManchester(int[] quadro) {
-    char[] sinais = new char[quadro.length * 2];
-    for (int i = 0; i < quadro.length; i++) {
-      int bit = quadro[i];
-      if (bit != 0 && bit != 1) throw new IllegalArgumentException("Bit invalido.");
-      // A representa nivel alto e B representa nivel baixo.
-      char primeiro = bit == 1 ? LISTA_AB[0] : LISTA_AB[1];
-      char segundo = primeiro == LISTA_AB[0] ? LISTA_AB[1] : LISTA_AB[0];
-      sinais[2 * i] = primeiro;
-      sinais[2 * i + 1] = segundo;
-    }
-    return converterListaABParaNiveis(sinais);
-  }
-  /* ***************************************************************
-  * Metodo: CamadaFisicaTransmissoraCodificacaoManchesterDiferencial
-  * Funcao: codificar os bits em Manchester Diferencial
-  * Parametros: quadro = vetor de bits a ser codificado
-  * Retorno: int[] com os niveis codificados
-  *************************************************************** */
-  public int[] CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(int[] quadro) {
-    char[] sinais = new char[quadro.length * 2];
-    char nivelAnterior = LISTA_AB[0];
-    for (int i = 0; i < quadro.length; i++) {
-      int bit = quadro[i];
-      if (bit != 0 && bit != 1) throw new IllegalArgumentException("Bit invalido.");
-      // O bit 0 troca A por B ou B por A no inicio do intervalo.
-      char sinalInvertido = nivelAnterior == LISTA_AB[0] ? LISTA_AB[1] : LISTA_AB[0];
-      char primeiro = bit == 0 ? sinalInvertido : nivelAnterior;
-      char segundo = primeiro == LISTA_AB[0] ? LISTA_AB[1] : LISTA_AB[0];
-      sinais[2 * i] = primeiro;
-      sinais[2 * i + 1] = segundo;
-      nivelAnterior = segundo;
-    }
-    return converterListaABParaNiveis(sinais);
+    return sinaisParaNiveis(codificacaoManchester(quadro));
   }
 
   /* ***************************************************************
-  * Metodo: converterListaABParaNiveis
-  * Funcao: converter os caracteres A e B nos niveis um e zero
-  * Parametros: sinais = lista interna formada por A e B
-  * Retorno: int[] com os niveis usados pelo meio de comunicacao
+  * Metodo: CamadaFisicaTransmissoraCodificacaoManchesterDiferencial
+  * Funcao: disponibilizar a codificacao diferencial do framework
+  * Parametros: quadro = inteiros com os bits da mensagem
+  * Retorno: int[] com A representado por um e B por zero
   *************************************************************** */
-  private int[] converterListaABParaNiveis(char[] sinais) {
+  public int[] CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(int[] quadro) {
+    return sinaisParaNiveis(codificacaoManchesterDiferencial(quadro));
+  }
+
+  /* ***************************************************************
+  * Metodo: sinaisParaNiveis
+  * Funcao: adaptar os sinais para os metodos publicos do framework
+  * Parametros: sinais = lista interna formada por A e B
+  * Retorno: int[] com niveis um e zero
+  *************************************************************** */
+  private static int[] sinaisParaNiveis(char[] sinais) {
     int[] niveis = new int[sinais.length];
-    for (int i = 0; i < sinais.length; i++) {
-      if (sinais[i] == SINAL_A_ALTO) niveis[i] = 1;
-      else if (sinais[i] == SINAL_B_BAIXO) niveis[i] = 0;
-      else throw new IllegalArgumentException("Sinal AB invalido.");
-    }
+    for (int i = 0; i < sinais.length; i++) niveis[i] = sinais[i] == 'A' ? 1 : 0;
     return niveis;
   }
 }
