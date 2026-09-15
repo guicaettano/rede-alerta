@@ -1,3 +1,11 @@
+/* ***************************************************************
+* Autor............: Guilherme Caetano dos Santos da Mata
+* Matricula........: 202510517
+* Inicio...........: 14/09/2026
+* Ultima alteracao.: 15/09/2026
+* Nome.............: TesteCamadas
+* Funcao...........: Validar conversoes e codificacoes sem abrir a GUI
+*************************************************************** */
 package testes;
 
 import java.util.Arrays;
@@ -5,22 +13,42 @@ import java.util.Random;
 import controller.ControladorPrincipal;
 import model.*;
 
-/** Testes sem janela: conversao da aplicacao e tres codificacoes. */
 public class TesteCamadas {
   private static int[] bits;
   private static String recebida;
+
+  /* ***************************************************************
+  * Metodo: exigir
+  * Funcao: interromper o teste quando uma condicao nao for atendida
+  * Parametros: condicao = resultado logico que deve ser verdadeiro
+  * Retorno: void
+  *************************************************************** */
   private static void exigir(boolean condicao) {
     if (!condicao) throw new AssertionError("Resultado incorreto");
   }
+  /* ***************************************************************
+  * Metodo: rejeitar
+  * Funcao: verificar se uma entrada invalida produz a excecao esperada
+  * Parametros: acao = rotina que deve rejeitar a entrada
+  * Retorno: void
+  *************************************************************** */
   private static void rejeitar(Runnable acao) {
     try { acao.run(); } catch (IllegalArgumentException esperado) { return; }
     throw new AssertionError("Entrada invalida aceita");
   }
+  /* ***************************************************************
+  * Metodo: main
+  * Funcao: executar todos os testes das camadas e codificacoes
+  * Parametros: argumentos = argumentos recebidos pela linha de comando
+  * Retorno: void
+  *************************************************************** */
   public static void main(String[] argumentos) {
     ControladorPrincipal.camadaFisicaTransmissora = new CamadaFisicaTransmissora() {
+      /* Captura o quadro produzido pela camada de aplicacao. */
       @Override public void CamadaFisicaTransmissora(int[] quadro) { bits = quadro; }
     };
     ControladorPrincipal.aplicacaoReceptora = new AplicacaoReceptora(null) {
+      /* Captura a mensagem reconstruida pela camada receptora. */
       @Override public void AplicacaoReceptora(String mensagem) { recebida = mensagem; }
     };
     CamadaAplicacaoTransmissora aplicacao = new CamadaAplicacaoTransmissora();

@@ -1,7 +1,20 @@
+/* ***************************************************************
+* Autor............: Guilherme Caetano dos Santos da Mata
+* Matricula........: 202510517
+* Inicio...........: 14/09/2026
+* Ultima alteracao.: 15/09/2026
+* Nome.............: CamadaAplicacaoReceptora
+* Funcao...........: Reconstruir a mensagem a partir do quadro de bits
+*************************************************************** */
 package model;
 import controller.ControladorPrincipal;
-/** Conversao inversa, seguida da chamada de aplicacao do slide 10. */
 public class CamadaAplicacaoReceptora {
+  /* ***************************************************************
+  * Metodo: CamadaDeAplicacaoReceptora
+  * Funcao: agrupar os bits e reconstruir os caracteres da mensagem
+  * Parametros: quadro = vetor com um bit em cada posicao
+  * Retorno: void
+  *************************************************************** */
   public void CamadaDeAplicacaoReceptora(int[] quadro) {
     if (quadro.length % 16 != 0) throw new IllegalArgumentException("Quadro incompleto.");
     StringBuilder mensagem = new StringBuilder();

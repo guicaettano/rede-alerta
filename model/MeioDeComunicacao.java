@@ -1,10 +1,31 @@
+/* ***************************************************************
+* Autor............: Guilherme Caetano dos Santos da Mata
+* Matricula........: 202510517
+* Inicio...........: 14/09/2026
+* Ultima alteracao.: 15/09/2026
+* Nome.............: MeioDeComunicacao
+* Funcao...........: Simular a transferencia de bits entre os pontos A e B
+*************************************************************** */
 package model;
 import controller.ControladorPrincipal;
-/** Transferencia de A para B bit a bit, como no slide 7. */
 public class MeioDeComunicacao {
   private final ControladorPrincipal controlador;
   private volatile Thread transmissao;
+
+  /* ***************************************************************
+  * Metodo: MeioDeComunicacao
+  * Funcao: associar o meio de comunicacao ao controlador da GUI
+  * Parametros: controlador = controlador principal da interface
+  * Retorno: objeto MeioDeComunicacao
+  *************************************************************** */
   public MeioDeComunicacao(ControladorPrincipal controlador) { this.controlador = controlador; }
+
+  /* ***************************************************************
+  * Metodo: MeioDeComunicacao
+  * Funcao: transferir cada bit do ponto A para o ponto B
+  * Parametros: fluxoBrutoDeBits = niveis produzidos pelo transmissor
+  * Retorno: void
+  *************************************************************** */
   public void MeioDeComunicacao(int[] fluxoBrutoDeBits) {
     final int[] fluxoBrutoDeBitsPontoA = fluxoBrutoDeBits.clone();
     final int[] fluxoBrutoDeBitsPontoB = new int[fluxoBrutoDeBitsPontoA.length];
@@ -30,5 +51,14 @@ public class MeioDeComunicacao {
     transmissao.setDaemon(true);
     transmissao.start();
   }
-  public void cancelar() { Thread atual = transmissao; if (atual != null) atual.interrupt(); }
+  /* ***************************************************************
+  * Metodo: cancelar
+  * Funcao: interromper uma transmissao que esteja em andamento
+  * Parametros: nenhum
+  * Retorno: void
+  *************************************************************** */
+  public void cancelar() {
+    Thread atual = transmissao;
+    if (atual != null) atual.interrupt();
+  }
 }

@@ -1,7 +1,20 @@
+/* ***************************************************************
+* Autor............: Guilherme Caetano dos Santos da Mata
+* Matricula........: 202510517
+* Inicio...........: 14/09/2026
+* Ultima alteracao.: 15/09/2026
+* Nome.............: CamadaFisicaReceptora
+* Funcao...........: Decodificar os niveis recebidos do meio fisico
+*************************************************************** */
 package model;
 import controller.ControladorPrincipal;
-/** Despacho e sub-rotinas dos slides 8 e 9. */
 public class CamadaFisicaReceptora {
+  /* ***************************************************************
+  * Metodo: CamadaFisicaReceptora
+  * Funcao: selecionar a decodificacao e encaminhar o quadro
+  * Parametros: quadro = niveis recebidos do meio de comunicacao
+  * Retorno: void
+  *************************************************************** */
   public void CamadaFisicaReceptora(int[] quadro) {
     int tipoDeDecodificacao = ControladorPrincipal.obterCodificacaoAtiva();
     int[] fluxoBrutoDeBits;
@@ -13,7 +26,22 @@ public class CamadaFisicaReceptora {
     }
     ControladorPrincipal.camadaAplicacaoReceptora.CamadaDeAplicacaoReceptora(fluxoBrutoDeBits);
   }
-  public int[] CamadaFisicaReceptoraDecodificacaoBinaria(int[] quadro) { return quadro; }
+  /* ***************************************************************
+  * Metodo: CamadaFisicaReceptoraDecodificacaoBinaria
+  * Funcao: recuperar o quadro binario sem transformacao
+  * Parametros: quadro = vetor binario recebido
+  * Retorno: int[] com os bits originais
+  *************************************************************** */
+  public int[] CamadaFisicaReceptoraDecodificacaoBinaria(int[] quadro) {
+    return quadro;
+  }
+
+  /* ***************************************************************
+  * Metodo: CamadaFisicaReceptoraDecodificacaoManchester
+  * Funcao: validar os pares Manchester e recuperar cada bit
+  * Parametros: quadro = niveis Manchester recebidos
+  * Retorno: int[] com os bits decodificados
+  *************************************************************** */
   public int[] CamadaFisicaReceptoraDecodificacaoManchester(int[] quadro) {
     if (quadro.length % 2 != 0) throw new IllegalArgumentException("Par incompleto.");
     int[] fluxo = new int[quadro.length / 2];
@@ -25,6 +53,12 @@ public class CamadaFisicaReceptora {
     }
     return fluxo;
   }
+  /* ***************************************************************
+  * Metodo: CamadaFisicaReceptoraDecodificacaoManchesterDiferencial
+  * Funcao: interpretar as transicoes e recuperar cada bit
+  * Parametros: quadro = niveis Manchester Diferencial recebidos
+  * Retorno: int[] com os bits decodificados
+  *************************************************************** */
   public int[] CamadaFisicaReceptoraDecodificacaoManchesterDiferencial(int[] quadro) {
     if (quadro.length % 2 != 0) throw new IllegalArgumentException("Par incompleto.");
     int[] fluxo = new int[quadro.length / 2];

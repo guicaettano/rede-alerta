@@ -1,3 +1,11 @@
+/* ***************************************************************
+* Autor............: Guilherme Caetano dos Santos da Mata
+* Matricula........: 202510517
+* Inicio...........: 14/09/2026
+* Ultima alteracao.: 15/09/2026
+* Nome.............: ControladorPrincipal
+* Funcao...........: Coordenar a interface e as camadas da simulacao
+*************************************************************** */
 package controller;
 
 import java.util.ArrayList;
@@ -21,7 +29,6 @@ import model.CamadaFisicaTransmissora;
 import model.MeioDeComunicacao;
 import util.Configuracao;
 
-/** Controla somente os componentes visuais do simulador Rede Alerta. */
 public class ControladorPrincipal {
   @FXML private ComboBox<String> seletorCodificacao;
   @FXML private TextArea campoMensagem;
@@ -40,13 +47,53 @@ public class ControladorPrincipal {
   private static volatile int codificacaoAtiva;
   private static ControladorPrincipal instancia;
   private boolean fechado;
-  public static int obterCodificacaoAtiva() { return codificacaoAtiva; }
-  public long obterAtraso() { return atraso; }
-  public String obterMensagem() { return campoMensagem.getText(); }
+
+  /* ***************************************************************
+  * Metodo: obterCodificacaoAtiva
+  * Funcao: informar a codificacao selecionada para as camadas fisicas
+  * Parametros: nenhum
+  * Retorno: int correspondente a codificacao ativa
+  *************************************************************** */
+  public static int obterCodificacaoAtiva() {
+    return codificacaoAtiva;
+  }
+
+  /* ***************************************************************
+  * Metodo: obterAtraso
+  * Funcao: informar o intervalo atual entre os niveis transmitidos
+  * Parametros: nenhum
+  * Retorno: long com o atraso em milissegundos
+  *************************************************************** */
+  public long obterAtraso() {
+    return atraso;
+  }
+
+  /* ***************************************************************
+  * Metodo: obterMensagem
+  * Funcao: ler a mensagem digitada no aparelho transmissor
+  * Parametros: nenhum
+  * Retorno: String com a mensagem da interface
+  *************************************************************** */
+  public String obterMensagem() {
+    return campoMensagem.getText();
+  }
+
+  /* ***************************************************************
+  * Metodo: fechar
+  * Funcao: encerrar com seguranca a transmissao ao fechar a janela
+  * Parametros: nenhum
+  * Retorno: void
+  *************************************************************** */
   public void fechar() {
     fechado = true;
     if (meioDeComunicacao != null) meioDeComunicacao.cancelar();
   }
+  /* ***************************************************************
+  * Metodo: registrarQuantidadeBits
+  * Funcao: registrar o tamanho do fluxo para posicionar a onda
+  * Parametros: quadro = bits originais, fluxo = niveis codificados
+  * Retorno: void
+  *************************************************************** */
   public static void registrarQuantidadeBits(int[] quadro, int[] fluxo) {
     instancia.quantidadeBitsDoFluxo = fluxo.length;
   }
@@ -59,6 +106,12 @@ public class ControladorPrincipal {
   public static CamadaAplicacaoReceptora camadaAplicacaoReceptora;
   public static AplicacaoReceptora aplicacaoReceptora;
 
+  /* ***************************************************************
+  * Metodo: initialize
+  * Funcao: configurar os controles e preparar as camadas da simulacao
+  * Parametros: nenhum
+  * Retorno: void
+  *************************************************************** */
   @FXML
   private void initialize() {
     instancia = this;
@@ -80,7 +133,12 @@ public class ControladorPrincipal {
     campoMensagem.setText("SOS");
   }
 
-  /** Instancia exatamente as sete classes definidas no framework do trabalho. */
+  /* ***************************************************************
+  * Metodo: montarCamadasDoFramework
+  * Funcao: instanciar as sete classes definidas pelo framework
+  * Parametros: nenhum
+  * Retorno: void
+  *************************************************************** */
   private void montarCamadasDoFramework() {
     aplicacaoTransmissora = new AplicacaoTransmissora(this);
     camadaAplicacaoTransmissora = new CamadaAplicacaoTransmissora();
@@ -91,6 +149,12 @@ public class ControladorPrincipal {
     aplicacaoReceptora = new AplicacaoReceptora(this);
   }
 
+  /* ***************************************************************
+  * Metodo: enviar
+  * Funcao: validar a mensagem e iniciar uma nova transmissao
+  * Parametros: nenhum
+  * Retorno: void
+  *************************************************************** */
   @FXML
   private void enviar() {
     String mensagem = campoMensagem.getText();
@@ -109,11 +173,23 @@ public class ControladorPrincipal {
     catch (RuntimeException erro) { informarErro("Falha: " + erro.getMessage()); }
   }
 
+  /* ***************************************************************
+  * Metodo: carregarExemplo
+  * Funcao: preencher o campo de mensagem com um alerta de exemplo
+  * Parametros: nenhum
+  * Retorno: void
+  *************************************************************** */
   @FXML
   private void carregarExemplo() {
     campoMensagem.setText("ALERTA");
   }
 
+  /* ***************************************************************
+  * Metodo: prepararNovaTransmissao
+  * Funcao: limpar o sinal e bloquear os controles durante o envio
+  * Parametros: nenhum
+  * Retorno: void
+  *************************************************************** */
   private void prepararNovaTransmissao() {
     sinaisVisiveis.clear();
     quantidadeBitsTransmitidos = 0;
@@ -126,24 +202,44 @@ public class ControladorPrincipal {
     definirStatus("Transmitindo", "status-transmitindo");
   }
 
-  /** Valor utilizado pelo switch/case da camada fisica do framework. */
+  /* ***************************************************************
+  * Metodo: obterCodificacao
+  * Funcao: converter a opcao da GUI no codigo usado pelo framework
+  * Parametros: nenhum
+  * Retorno: int entre zero e dois
+  *************************************************************** */
   public int obterCodificacao() {
     int indice = seletorCodificacao.getSelectionModel().getSelectedIndex();
     return indice < 0 ? 0 : indice;
   }
 
-  /** Metodo chamado pela AplicacaoTransmissora original. */
+  /* ***************************************************************
+  * Metodo: definirMensagemTransmissor
+  * Funcao: exibir no transmissor a mensagem colocada no quadro
+  * Parametros: mensagem = texto enviado pela aplicacao transmissora
+  * Retorno: void
+  *************************************************************** */
   public void definirMensagemTransmissor(String mensagem) {
     mensagemTransmitida.setText(mensagem);
 
   }
 
-  /** Mantido para compatibilidade com o deslocamento visual do meio original. */
+  /* ***************************************************************
+  * Metodo: deslocaSinal
+  * Funcao: manter compatibilidade com o deslocamento visual do meio
+  * Parametros: nenhum
+  * Retorno: void
+  *************************************************************** */
   public void deslocaSinal() {
     // A Canvas redesenha a janela de sinais automaticamente em atualizaSinal.
   }
 
-  /** Recebe cada bit transferido pelo MeioDeComunicacao original. */
+  /* ***************************************************************
+  * Metodo: atualizaSinal
+  * Funcao: acrescentar um nivel recebido e redesenhar a forma de onda
+  * Parametros: bit = nivel atual, ultimoSinal = referencia visual anterior
+  * Retorno: void
+  *************************************************************** */
   public void atualizaSinal(int bit, int ultimoSinal) {
     Platform.runLater(() -> {
       if (fechado) return;
@@ -153,11 +249,22 @@ public class ControladorPrincipal {
     });
   }
 
-  /** Mantido para compatibilidade com a limpeza final do meio original. */
+  /* ***************************************************************
+  * Metodo: removeSinal
+  * Funcao: manter o historico da onda visivel ao final do envio
+  * Parametros: indice = posicao do sinal que seria removido
+  * Retorno: void
+  *************************************************************** */
   public void removeSinal(int indice) {
     // O historico permanece visivel para o usuario inspecionar ao final.
   }
 
+  /* ***************************************************************
+  * Metodo: exibirMensagemRecebida
+  * Funcao: mostrar a mensagem reconstruida e liberar os controles
+  * Parametros: mensagem = texto entregue pela aplicacao receptora
+  * Retorno: void
+  *************************************************************** */
   public void exibirMensagemRecebida(String mensagem) {
     Platform.runLater(() -> {
       if (fechado) return;
@@ -169,6 +276,12 @@ public class ControladorPrincipal {
     });
   }
 
+  /* ***************************************************************
+  * Metodo: informarErro
+  * Funcao: exibir uma falha e devolver a interface ao estado utilizavel
+  * Parametros: mensagem = descricao da falha ocorrida
+  * Retorno: void
+  *************************************************************** */
   public void informarErro(String mensagem) {
     Platform.runLater(() -> {
       if (fechado) return;
@@ -179,11 +292,23 @@ public class ControladorPrincipal {
     });
   }
 
+  /* ***************************************************************
+  * Metodo: definirStatus
+  * Funcao: atualizar o texto e a aparencia do estado do canal
+  * Parametros: texto = estado exibido, classe = estilo visual aplicado
+  * Retorno: void
+  *************************************************************** */
   private void definirStatus(String texto, String classe) {
     etiquetaStatus.setText(texto);
     etiquetaStatus.getStyleClass().setAll("status", classe);
   }
 
+  /* ***************************************************************
+  * Metodo: desenharOnda
+  * Funcao: desenhar o canal e os niveis transmitidos no Canvas
+  * Parametros: nenhum
+  * Retorno: void
+  *************************************************************** */
   private void desenharOnda() {
     GraphicsContext contexto = canvasOnda.getGraphicsContext2D();
     double largura = canvasOnda.getWidth();
@@ -243,6 +368,12 @@ public class ControladorPrincipal {
     contexto.fillOval(cabeca - 6, yAnterior - 6, 12, 12);
   }
 
+  /* ***************************************************************
+  * Metodo: nivelY
+  * Funcao: converter o nivel logico em coordenada vertical da onda
+  * Parametros: bit = nivel logico, altura = altura disponivel no Canvas
+  * Retorno: double com a coordenada vertical
+  *************************************************************** */
   private double nivelY(int bit, double altura) {
     return bit == 1 ? altura / 2 - 28 : altura / 2 + 28;
   }

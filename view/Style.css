@@ -1,3 +1,11 @@
+/* ***************************************************************
+* Autor............: Guilherme Caetano dos Santos da Mata
+* Matricula........: 202510517
+* Inicio...........: 14/09/2026
+* Ultima alteracao.: 15/09/2026
+* Nome.............: Style
+* Funcao...........: Definir a aparencia visual da interface Rede Alerta
+*************************************************************** */
 .root {
   -fx-font-family: "Segoe UI", "Arial";
   -fx-font-smoothing-type: gray;

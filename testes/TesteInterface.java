@@ -1,3 +1,11 @@
+/* ***************************************************************
+* Autor............: Guilherme Caetano dos Santos da Mata
+* Matricula........: 202510517
+* Inicio...........: 14/09/2026
+* Ultima alteracao.: 15/09/2026
+* Nome.............: TesteInterface
+* Funcao...........: Validar a interface e as transmissoes completas
+*************************************************************** */
 package testes;
 
 import controller.ControladorPrincipal;
@@ -15,15 +23,26 @@ import javafx.util.Duration;
 import java.io.File;
 import javax.imageio.ImageIO;
 
-/** Verifica FXML, transmissao real nas tres opcoes e fechamento. */
 public class TesteInterface extends Application {
   private Parent raiz;
   private Stage palco;
   private ControladorPrincipal controlador;
   private int opcao;
+  /* ***************************************************************
+  * Metodo: exigir
+  * Funcao: interromper o teste quando a interface estiver incorreta
+  * Parametros: condicao = resultado logico que deve ser verdadeiro
+  * Retorno: void
+  *************************************************************** */
   private void exigir(boolean condicao) {
     if (!condicao) throw new AssertionError("Falha na interface, opcao " + opcao);
   }
+  /* ***************************************************************
+  * Metodo: start
+  * Funcao: carregar a GUI e iniciar a sequencia de testes
+  * Parametros: janela = palco JavaFX usado durante a verificacao
+  * Retorno: void
+  *************************************************************** */
   @Override public void start(Stage janela) throws Exception {
     palco = janela;
     FXMLLoader carregador = new FXMLLoader(getClass().getResource("/view/view_principal.fxml"));
@@ -36,6 +55,12 @@ public class TesteInterface extends Application {
     ((Slider) raiz.lookup("#controleVelocidade")).setValue(1);
     transmitir();
   }
+  /* ***************************************************************
+  * Metodo: salvarCaptura
+  * Funcao: registrar uma imagem da interface durante a transmissao
+  * Parametros: nenhum
+  * Retorno: void
+  *************************************************************** */
   private void salvarCaptura() {
     try {
       WritableImage imagem = new WritableImage(1360, 690);
@@ -44,6 +69,12 @@ public class TesteInterface extends Application {
           new File("img/preview-rede-alerta.png"));
     } catch (Exception erro) { throw new RuntimeException(erro); }
   }
+  /* ***************************************************************
+  * Metodo: transmitir
+  * Funcao: testar sequencialmente cada opcao de codificacao
+  * Parametros: nenhum
+  * Retorno: void
+  *************************************************************** */
   private void transmitir() {
     ((ComboBox<?>) raiz.lookup("#seletorCodificacao")).getSelectionModel().select(opcao);
     ((TextArea) raiz.lookup("#campoMensagem")).setText("SOS");
@@ -85,5 +116,13 @@ public class TesteInterface extends Application {
     });
     espera.play();
   }
-  public static void main(String[] argumentos) { launch(argumentos); }
+  /* ***************************************************************
+  * Metodo: main
+  * Funcao: iniciar o teste automatizado da interface JavaFX
+  * Parametros: argumentos = argumentos recebidos pela linha de comando
+  * Retorno: void
+  *************************************************************** */
+  public static void main(String[] argumentos) {
+    launch(argumentos);
+  }
 }

@@ -1,7 +1,20 @@
+/* ***************************************************************
+* Autor............: Guilherme Caetano dos Santos da Mata
+* Matricula........: 202510517
+* Inicio...........: 14/09/2026
+* Ultima alteracao.: 15/09/2026
+* Nome.............: CamadaAplicacaoTransmissora
+* Funcao...........: Converter a mensagem em um quadro de bits
+*************************************************************** */
 package model;
 import controller.ControladorPrincipal;
-/** Conversao deixada em aberto no slide 4; cada elemento armazena um bit. */
 public class CamadaAplicacaoTransmissora {
+  /* ***************************************************************
+  * Metodo: CamadaDeAplicacaoTransmissora
+  * Funcao: converter cada caractere da mensagem em 16 bits
+  * Parametros: mensagem = texto informado pelo usuario
+  * Retorno: void
+  *************************************************************** */
   public void CamadaDeAplicacaoTransmissora(String mensagem) {
     int[] quadro = new int[mensagem.length() * 16];
     // Cada caractere Java ocupa 16 bits; cada posicao do vetor guarda um bit.

@@ -1,7 +1,20 @@
+/* ***************************************************************
+* Autor............: Guilherme Caetano dos Santos da Mata
+* Matricula........: 202510517
+* Inicio...........: 14/09/2026
+* Ultima alteracao.: 15/09/2026
+* Nome.............: CamadaFisicaTransmissora
+* Funcao...........: Aplicar a codificacao fisica selecionada
+*************************************************************** */
 package model;
 import controller.ControladorPrincipal;
-/** Despacho e sub-rotinas dos slides 5 e 6. */
 public class CamadaFisicaTransmissora {
+  /* ***************************************************************
+  * Metodo: CamadaFisicaTransmissora
+  * Funcao: selecionar a codificacao e enviar os bits ao meio
+  * Parametros: quadro = bits produzidos pela camada de aplicacao
+  * Retorno: void
+  *************************************************************** */
   public void CamadaFisicaTransmissora(int[] quadro) {
     int tipoDeCodificacao = ControladorPrincipal.obterCodificacaoAtiva();
     int[] fluxoBrutoDeBits;
@@ -14,7 +27,22 @@ public class CamadaFisicaTransmissora {
     ControladorPrincipal.registrarQuantidadeBits(quadro, fluxoBrutoDeBits);
     ControladorPrincipal.meioDeComunicacao.MeioDeComunicacao(fluxoBrutoDeBits);
   }
-  public int[] CamadaFisicaTransmissoraCodificacaoBinaria(int[] quadro) { return quadro; }
+  /* ***************************************************************
+  * Metodo: CamadaFisicaTransmissoraCodificacaoBinaria
+  * Funcao: manter o quadro na codificacao binaria original
+  * Parametros: quadro = vetor de bits a ser transmitido
+  * Retorno: int[] com os bits sem alteracao
+  *************************************************************** */
+  public int[] CamadaFisicaTransmissoraCodificacaoBinaria(int[] quadro) {
+    return quadro;
+  }
+
+  /* ***************************************************************
+  * Metodo: CamadaFisicaTransmissoraCodificacaoManchester
+  * Funcao: codificar cada bit em dois niveis Manchester
+  * Parametros: quadro = vetor de bits a ser codificado
+  * Retorno: int[] com os niveis codificados
+  *************************************************************** */
   public int[] CamadaFisicaTransmissoraCodificacaoManchester(int[] quadro) {
     int[] fluxo = new int[quadro.length * 2];
     for (int i = 0; i < quadro.length; i++) {
@@ -27,6 +55,12 @@ public class CamadaFisicaTransmissora {
     }
     return fluxo;
   }
+  /* ***************************************************************
+  * Metodo: CamadaFisicaTransmissoraCodificacaoManchesterDiferencial
+  * Funcao: codificar os bits em Manchester Diferencial
+  * Parametros: quadro = vetor de bits a ser codificado
+  * Retorno: int[] com os niveis codificados
+  *************************************************************** */
   public int[] CamadaFisicaTransmissoraCodificacaoManchesterDiferencial(int[] quadro) {
     int[] fluxo = new int[quadro.length * 2];
     int nivelAnterior = 1;
