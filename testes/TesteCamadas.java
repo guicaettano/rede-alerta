@@ -1,7 +1,7 @@
 /* ***************************************************************
 * Autor............: Guilherme Caetano dos Santos da Mata
 * Matricula........: 202510517
-* Inicio...........: 14/09/2026
+* Inicio...........: 05/09/2026
 * Ultima alteracao.: 15/09/2026
 * Nome.............: TesteCamadas
 * Funcao...........: Validar conversoes e codificacoes sem abrir a GUI

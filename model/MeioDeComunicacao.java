@@ -1,7 +1,7 @@
 /* ***************************************************************
 * Autor............: Guilherme Caetano dos Santos da Mata
 * Matricula........: 202510517
-* Inicio...........: 14/09/2026
+* Inicio...........: 05/09/2026
 * Ultima alteracao.: 15/09/2026
 * Nome.............: MeioDeComunicacao
 * Funcao...........: Simular a transferencia de bits entre os pontos A e B
